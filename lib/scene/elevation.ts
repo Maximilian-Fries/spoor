@@ -94,7 +94,7 @@ export class ElevationScene extends Scene {
 
     // dock and vehicle
     const dk = this.P(E_DOCK, E_G), vh = this.P(E_VEH, E_G);
-    if (phase >= 1) { ctx.save(); ctx.strokeStyle = C.net; ctx.fillStyle = C.bg; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.rect(dk[0] - 5, dk[1] - 7, 10, 7); ctx.fill(); ctx.stroke(); ctx.restore(); }
+    if (phase >= 1) { ctx.save(); ctx.strokeStyle = C.police; ctx.fillStyle = C.bg; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.rect(dk[0] - 5, dk[1] - 7, 10, 7); ctx.fill(); ctx.stroke(); ctx.restore(); }
     ctx.save(); ctx.fillStyle = C.line2; ctx.strokeStyle = C.fg3; ctx.lineWidth = 1; ctx.fillRect(vh[0] - 8, vh[1] - 7, 16, 7); ctx.strokeRect(vh[0] - 8.5, vh[1] - 7.5, 17, 8); ctx.restore();
 
     // recorded track
@@ -137,11 +137,11 @@ export class ElevationScene extends Scene {
     if (phase === 3 && droneS !== null) {
       const landed = u >= 0.985, ip = atP(PATH, 0.62), dkp: Pt = [E_DOCK, E_G - 0.012];
       let cp: Pt;
-      if (u < 0.12) { const r0 = u / 0.12; ctx.save(); ctx.strokeStyle = C.net; ctx.globalAlpha = 1 - r0; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(dk[0], dk[1] - 4, 6 + r0 * 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); cp = dkp; }
+      if (u < 0.12) { const r0 = u / 0.12; ctx.save(); ctx.strokeStyle = C.police; ctx.globalAlpha = 1 - r0; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(dk[0], dk[1] - 4, 6 + r0 * 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); cp = dkp; }
       else if (u < 0.4) { const f = ease((u - 0.12) / 0.28); cp = [dkp[0] + (ip[0] - dkp[0]) * f, dkp[1] + (ip[1] - dkp[1]) * f]; }
       else cp = atP(PATH, Math.max(0.62, droneS - 0.05));
       if (u >= 0.12) {
-        ctx.save(); ctx.strokeStyle = C.net; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.7; ctx.setLineDash([1, 4]); ctx.beginPath();
+        ctx.save(); ctx.strokeStyle = C.police; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.7; ctx.setLineDash([1, 4]); ctx.beginPath();
         const d0 = this.P(dkp[0], dkp[1]); ctx.moveTo(d0[0], d0[1]);
         if (u < 0.4) { const c1 = this.P(cp[0], cp[1]); ctx.lineTo(c1[0], c1[1]); }
         else { const i0 = this.P(ip[0], ip[1]); ctx.lineTo(i0[0], i0[1]); for (let cs = 0.62; cs <= Math.max(0.62, droneS - 0.05); cs += 0.004) { const cq = atP(PATH, cs), cqp = this.P(cq[0], cq[1]); ctx.lineTo(cqp[0], cqp[1]); } }
@@ -149,14 +149,14 @@ export class ElevationScene extends Scene {
       }
       this.police(cp[0], cp[1], 1);
       const cpp = this.P(cp[0], cp[1]);
-      if (u > 0.14 && u < 0.5) this.box(cpp[0] - 14, cpp[1] - 50, ["POLICE DRONE · CUED", "dispatch 21:35:40 · intercept 1.3 km"], C.net, "right");
-      if (u >= 0.5 && !landed) this.box(cpp[0] - 14, cpp[1] - 50, ["FOLLOWING", "camera locked · 120 m behind"], C.net, "right");
+      if (u > 0.14 && u < 0.5) this.box(cpp[0] - 14, cpp[1] - 50, ["POLICE DRONE · CUED", "dispatch 21:35:40 · intercept 1.3 km"], C.police, "right");
+      if (u >= 0.5 && !landed) this.box(cpp[0] - 14, cpp[1] - 50, ["FOLLOWING", "camera locked · 120 m behind"], C.police, "right");
       if (landed) {
         const k2 = 14;
-        ctx.save(); ctx.strokeStyle = C.net; ctx.lineWidth = 1.5;
+        ctx.save(); ctx.strokeStyle = C.police; ctx.lineWidth = 1.5;
         for (const c of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { ctx.beginPath(); ctx.moveTo(vh[0] + c[0] * k2, vh[1] - 4 + c[1] * k2 * 0.5); ctx.lineTo(vh[0] + c[0] * k2, vh[1] - 4 + c[1] * k2); ctx.lineTo(vh[0] + c[0] * k2 * 0.5, vh[1] - 4 + c[1] * k2); ctx.stroke(); }
         ctx.restore();
-        this.box(vh[0] - 14, this.P(0, 0.13)[1], ["LANDING FILMED 21:43:07", "vehicle on coastal road · evidence pack sent"], C.net, "right");
+        this.box(vh[0] - 14, this.P(0, 0.13)[1], ["LANDING FILMED 21:43:07", "vehicle on coastal road · evidence pack sent"], C.police, "right");
       }
     }
   }

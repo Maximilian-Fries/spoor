@@ -1,4 +1,4 @@
-import { easeOut, type Colors, type Pt } from "./common";
+import { easeOut, withAlpha, type Colors, type Pt } from "./common";
 
 export interface Readout { hosts: number; trackKm: number; warnSeconds: number; complete: boolean }
 
@@ -59,7 +59,7 @@ export class CoverageScene {
     ctx.restore();
     // coverage union
     ctx.save(); ctx.globalCompositeOperation = "lighter";
-    for (let i = 0; i < count; i++) { const n = SITES[i], p = this.P(n.x, n.y), a = age(i); if (a <= 0) continue; ctx.beginPath(); ctx.arc(p[0], p[1], n.r * s * easeOut(a), 0, Math.PI * 2); ctx.fillStyle = `rgba(127,179,227,${0.07 * easeOut(a)})`; ctx.fill(); }
+    for (let i = 0; i < count; i++) { const n = SITES[i], p = this.P(n.x, n.y), a = age(i); if (a <= 0) continue; ctx.beginPath(); ctx.arc(p[0], p[1], n.r * s * easeOut(a), 0, Math.PI * 2); ctx.fillStyle = withAlpha(C.net, 0.07 * easeOut(a)); ctx.fill(); }
     ctx.restore();
     for (let i = 0; i < count; i++) {
       const n = SITES[i], p = this.P(n.x, n.y), a = age(i); if (a <= 0) continue;

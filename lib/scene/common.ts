@@ -9,6 +9,8 @@ export interface Colors {
   line: string;
   line2: string;
   bg: string;
+  police: string;
+  panelBg: string;
   mono: string;
 }
 
@@ -23,9 +25,19 @@ export function readColors(): Colors {
     fg3: v("--fg-3", "#73808E"),
     line: v("--line", "#1F2933"),
     line2: v("--line-2", "#2C3845"),
-    bg: v("--bg-2", "#0F141B"),
+    bg: v("--bg-2", "#FFFFFF"),
+    police: v("--police", v("--net", "#1D5FD1")),
+    panelBg: v("--panel-bg", "rgba(255,255,255,.94)"),
     mono: v("--font-mono", '"IBM Plex Mono", ui-monospace, Menlo, monospace'),
   };
+}
+
+/** "#rrggbb" plus an alpha, as an rgba() string. */
+export function withAlpha(hex: string, a: number): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 }
 
 export interface Path {
@@ -171,7 +183,7 @@ export abstract class Scene {
     if (lx < 6) lx = 6;
     if (ly + h > this.H - 6) ly = this.H - 6 - h;
     if (ly < 6) ly = 6;
-    ctx.fillStyle = "rgba(10,14,19,.9)"; ctx.strokeStyle = color; ctx.lineWidth = 1;
+    ctx.fillStyle = this.C.panelBg; ctx.strokeStyle = color; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.rect(lx + 0.5, ly + 0.5, w, h); ctx.fill(); ctx.stroke();
     ctx.fillRect(lx, ly, 2, h);
     ctx.textBaseline = "top";
@@ -192,8 +204,8 @@ export abstract class Scene {
   police(x: number, y: number, alpha: number) {
     const ctx = this.ctx, p = this.P(x, y), r = this.small ? 4 : 5.5;
     ctx.save(); ctx.globalAlpha = alpha; ctx.translate(p[0], p[1]); ctx.rotate(Math.PI / 4);
-    ctx.fillStyle = this.C.net; ctx.fillRect(-r / 2, -r / 2, r, r);
-    ctx.strokeStyle = this.C.net; ctx.lineWidth = 1; ctx.globalAlpha = alpha * 0.6; ctx.strokeRect(-r, -r, r * 2, r * 2);
+    ctx.fillStyle = this.C.police; ctx.fillRect(-r / 2, -r / 2, r, r);
+    ctx.strokeStyle = this.C.police; ctx.lineWidth = 1; ctx.globalAlpha = alpha * 0.6; ctx.strokeRect(-r, -r, r * 2, r * 2);
     ctx.restore();
   }
 

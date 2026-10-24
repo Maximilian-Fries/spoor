@@ -1,15 +1,17 @@
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import Hero from "@/components/Hero";
 import PlanView from "@/components/PlanView";
 import HowItWorks from "@/components/HowItWorks";
 import CoverageGrowth from "@/components/CoverageGrowth";
 import InterestForm from "@/components/InterestForm";
+import StealthBand from "@/components/StealthBand";
 import Clock from "@/components/Clock";
-import { BRAND, TAGLINE, LAUNCH_YEAR } from "@/lib/site";
+import { BRAND, LAUNCH_YEAR } from "@/lib/site";
 
 const STATS = [
-  { n: "116", l: "full or partial closures of German airports over unidentified drones in 2025", s: "Der Spiegel / DLR, June 2026" },
-  { n: "€160", unit: "M", l: "estimated cost of those closures to airlines and airports", s: "Der Spiegel / DLR, June 2026" },
+  { n: "116", l: "full or partial closures of German airports over unidentified drones in 2025, at a cost of about €160M", s: "Der Spiegel / DLR, June 2026" },
+  { n: "55", unit: "%", l: "of 104 German critical-infrastructure operators saw unauthorized drone flights in the past year; nearly half have no detection at all", s: "dpa survey, September 2026" },
   { n: "3", unit: "of 13", l: "drone incidents in Saxony where police identified the pilot, first half of 2026", s: "Saxon state parliament, 2026" },
   { n: "1,000", unit: "+", l: "suspicious drone flights over critical sites, military bases and defense firms in Germany in 2025", s: "Federal Criminal Police (BKA)" },
 ];
@@ -24,19 +26,18 @@ const BUYERS = [
 export default function Home() {
   return (
     <>
-      <section className="hero">
+      <Hero />
+
+      <section className="picture" id="picture">
         <div className="wrap">
-          <div className="hero-copy">
-            <div className="eyebrow">{TAGLINE}</div>
-            <h1>Every drone leaves a trail.</h1>
-            <p className="lead">{BRAND} is a shared sensor network that records every drone track across many sites, follows the trail back to where the drone was launched, and cues the police drones already in service to follow it home.</p>
-            <div className="ctas">
-              <a className="btn primary" href="#how">See how it works <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></a>
-              <a className="btn" href="#stealth">Register interest</a>
+          <Reveal className="sec-head">
+            <div>
+              <div className="eyebrow">The picture</div>
+              <h2>Many sites. One network. One incident, start to finish.</h2>
             </div>
-            <p className="hero-note">Detecting a drone is becoming a commodity. <b>Proving where it came from is not.</b> That is the problem we exist to solve.</p>
-          </div>
-          <PlanView />
+            <p className="lead">Seven host sites along a coast. A drone enters coverage, is handed from node to node, traced back to its launch area, and followed home by a police drone.</p>
+          </Reveal>
+          <Reveal><PlanView /></Reveal>
         </div>
       </section>
 
@@ -47,9 +48,9 @@ export default function Home() {
           <Reveal className="sec-head">
             <div>
               <div className="eyebrow">Why {BRAND} exists</div>
-              <h2>When a drone closes an airport, nobody can say where it came from.</h2>
+              <h2>Drones are everywhere. The answer to where they came from is nowhere.</h2>
             </div>
-            <p className="lead">Drones are shutting runways, dropping contraband into prisons and crossing military bases. The sensors to detect them exist. What does not exist is an answer to the question that decides the response: who flew it, and from where.</p>
+            <p className="lead">Drones are shutting runways, dropping contraband into prisons and crossing military bases. Detecting one at one site is a solved problem. Seeing all of them, across a region, and tracing any one of them back to a pilot is not.</p>
           </Reveal>
           <Reveal className="stats">
             {STATS.map((st) => (
@@ -61,7 +62,7 @@ export default function Home() {
             ))}
           </Reveal>
           <Reveal className="gap-line">
-            <p>Without attribution every incident ends the same way. The drone leaves, the pilot is never found, and nobody can say whether it was a hobbyist or a hostile act. In our research we found no product that turns sensor tracks into evidence of a launch point. That is the gap {BRAND} closes.</p>
+            <p>Site-by-site systems cost six to seven figures and stop at the fence. They never reach the long tail of plants, depots and substations, and they cannot say where a drone came from. {BRAND} spreads cheap nodes across many sites instead, so detection scales with the number of hosts, and every track leads somewhere.</p>
             <div className="q">After 144 suspected drone sightings across Europe since 2024, investigators could not tie a single drone to a launch site with signals, wreckage or video. Sweden’s military representative to NATO calls attribution often almost impossible.<span className="s">IISS report and critique, July 2026</span></div>
           </Reveal>
         </div>
@@ -140,7 +141,7 @@ export default function Home() {
         <div className="wrap">
           <div className="net">
             <Reveal className="net-copy">
-              <div className="eyebrow">Why it compounds</div>
+              <div className="eyebrow">Why it scales</div>
               <h2>Every new site makes every trace longer.</h2>
               <p>A single site sees a drone for seconds. Neighbouring nodes see it before it arrives, tracks across sites lead back to a launch point, and each site adds data that cuts false alarms.</p>
               <p>Coverage grows cluster by cluster: an industrial park, a port, a defense-industry region. The state pays for the combined picture. The hosts make it exist.</p>
@@ -150,23 +151,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="stealth" id="stealth">
-        <div className="wrap">
-          <Reveal>
-            <div className="eyebrow">Status</div>
-            <h2>We are in stealth.<br />Coming {LAUNCH_YEAR}.</h2>
-            <p className="lead">{BRAND} is being built with police drone units and a first corridor of host sites. We are not taking customers yet. If you run drones for a police force, protect an airport or a prison, or want to host a node, we would like to talk.</p>
-            <InterestForm />
-          </Reveal>
-          <Reveal className="status" aria-label="Company status">
-            <div className="row"><div className="k">Status</div><div className="v"><span className="st"><span className="dot" aria-hidden="true" />Stealth</span></div></div>
-            <div className="row"><div className="k">Now</div><div className="v">Corridor test: 3 to 5 nodes along a 2 to 3 km corridor, test drones flown through it</div></div>
-            <div className="row"><div className="k">Next</div><div className="v">First chase-drone cue with a police partner</div></div>
-            <div className="row"><div className="k">Launch</div><div className="v">{LAUNCH_YEAR}, Germany first</div></div>
-            <div className="row"><div className="k">Clock</div><div className="v"><Clock /></div></div>
-          </Reveal>
-        </div>
-      </section>
+      <StealthBand aside={
+        <Reveal className="status" aria-label="Company status">
+          <div className="row"><div className="k">Status</div><div className="v"><span className="st"><span className="dot" aria-hidden="true" />Stealth</span></div></div>
+          <div className="row"><div className="k">Now</div><div className="v">Corridor test: 3 to 5 nodes along a 2 to 3 km corridor, test drones flown through it</div></div>
+          <div className="row"><div className="k">Next</div><div className="v">First chase-drone cue with a police partner</div></div>
+          <div className="row"><div className="k">Launch</div><div className="v">{LAUNCH_YEAR}, Germany first</div></div>
+          <div className="row"><div className="k">Clock</div><div className="v"><Clock /></div></div>
+        </Reveal>
+      }>
+        <div className="eyebrow">Status</div>
+        <h2>We are in stealth.<br />Coming {LAUNCH_YEAR}.</h2>
+        <p className="lead">{BRAND} is being built with police drone units and a first corridor of host sites. We are not taking customers yet. If you run drones for a police force, protect an airport or a prison, or want to host a node, we would like to talk.</p>
+        <InterestForm />
+      </StealthBand>
     </>
   );
 }

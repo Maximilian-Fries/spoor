@@ -12,15 +12,15 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variabl
 
 export const metadata: Metadata = {
   title: { default: BRAND, template: `%s · ${BRAND}` },
-  description: `${BRAND} is a shared sensor network that records every drone track across many sites, follows the trail back to the launch point, and cues the police drones already in service to follow it home.`,
+  description: `${BRAND} makes drone detection scale: ordinary sites host small sensor nodes that form one shared picture, track every drone from site to site, and trace it back to its launch point.`,
   applicationName: BRAND,
   keywords: [TAGLINE, "drone detection", "drone attribution", "counter-UAS"],
   robots: { index: false, follow: false }, // stealth: keep search engines out until launch
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0e13",
-  colorScheme: "dark",
+  themeColor: "#f5f6f4",
+  colorScheme: "light",
   viewportFit: "cover",
 };
 

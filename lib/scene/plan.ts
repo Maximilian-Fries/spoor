@@ -91,7 +91,7 @@ export class PlanScene extends Scene {
     // police dock
     if (phase >= 1) {
       const p = this.P(DOCK.x, DOCK.y);
-      ctx.save(); ctx.strokeStyle = C.net; ctx.fillStyle = C.bg; ctx.lineWidth = 1.2; ctx.translate(p[0], p[1]); ctx.rotate(Math.PI / 4);
+      ctx.save(); ctx.strokeStyle = C.police; ctx.fillStyle = C.bg; ctx.lineWidth = 1.2; ctx.translate(p[0], p[1]); ctx.rotate(Math.PI / 4);
       ctx.beginPath(); ctx.rect(-4.5, -4.5, 9, 9); ctx.fill(); ctx.stroke(); ctx.rotate(-Math.PI / 4);
       if (!this.small) { ctx.fillStyle = C.fg3; ctx.font = this.font(400, 8.5); this.setTracking("0.08em"); ctx.fillText("POLICE DRONE DOCK", 9, -6); }
       ctx.restore();
@@ -141,11 +141,11 @@ export class PlanScene extends Scene {
     if (phase === 3 && dronePos && droneS !== null) {
       const landed = u >= 0.985, ip = atP(PATH, 0.6);
       let cp: Pt;
-      if (u < 0.12) { const lp = this.P(DOCK.x, DOCK.y), r0 = u / 0.12; ctx.save(); ctx.strokeStyle = C.net; ctx.globalAlpha = 1 - r0; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(lp[0], lp[1], 6 + r0 * 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); cp = [DOCK.x, DOCK.y]; }
+      if (u < 0.12) { const lp = this.P(DOCK.x, DOCK.y), r0 = u / 0.12; ctx.save(); ctx.strokeStyle = C.police; ctx.globalAlpha = 1 - r0; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(lp[0], lp[1], 6 + r0 * 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); cp = [DOCK.x, DOCK.y]; }
       else if (u < 0.4) { const f = ease((u - 0.12) / 0.28); cp = [DOCK.x + (ip[0] - DOCK.x) * f, DOCK.y + (ip[1] - DOCK.y) * f]; }
       else cp = atP(PATH, Math.max(0.6, droneS - 0.05));
       if (u >= 0.12) {
-        ctx.save(); ctx.strokeStyle = C.net; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.7; ctx.setLineDash([1, 4]); ctx.beginPath();
+        ctx.save(); ctx.strokeStyle = C.police; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.7; ctx.setLineDash([1, 4]); ctx.beginPath();
         const d0 = this.P(DOCK.x, DOCK.y); ctx.moveTo(d0[0], d0[1]);
         if (u < 0.4) { const c1 = this.P(cp[0], cp[1]); ctx.lineTo(c1[0], c1[1]); }
         else { const i0 = this.P(ip[0], ip[1]); ctx.lineTo(i0[0], i0[1]); for (let cs = 0.6; cs <= Math.max(0.6, droneS - 0.05); cs += 0.004) { const cq = atP(PATH, cs), cqp = this.P(cq[0], cq[1]); ctx.lineTo(cqp[0], cqp[1]); } }
@@ -153,15 +153,15 @@ export class PlanScene extends Scene {
       }
       this.police(cp[0], cp[1], 1);
       const cpp = this.P(cp[0], cp[1]);
-      if (u > 0.14 && u < 0.5) this.box(cpp[0] - 12, cpp[1] + 12, ["POLICE DRONE · CUED", "dispatch 21:35:40 · intercept 1.9 km"], C.net, "right");
-      if (u >= 0.5 && !landed) this.box(cpp[0] - 12, cpp[1] + 12, ["FOLLOWING", "camera locked · 120 m behind"], C.net, "right");
+      if (u > 0.14 && u < 0.5) this.box(cpp[0] - 12, cpp[1] + 12, ["POLICE DRONE · CUED", "dispatch 21:35:40 · intercept 1.9 km"], C.police, "right");
+      if (u >= 0.5 && !landed) this.box(cpp[0] - 12, cpp[1] + 12, ["FOLLOWING", "camera locked · 120 m behind"], C.police, "right");
       if (landed) {
         const lb = this.P(dronePos[0], dronePos[1]), k = 14;
-        ctx.save(); ctx.strokeStyle = C.net; ctx.lineWidth = 1.5;
+        ctx.save(); ctx.strokeStyle = C.police; ctx.lineWidth = 1.5;
         for (const c of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { ctx.beginPath(); ctx.moveTo(lb[0] + c[0] * k, lb[1] + c[1] * k * 0.5); ctx.lineTo(lb[0] + c[0] * k, lb[1] + c[1] * k); ctx.lineTo(lb[0] + c[0] * k * 0.5, lb[1] + c[1] * k); ctx.stroke(); }
         ctx.fillStyle = C.line2; ctx.strokeStyle = C.fg3; ctx.lineWidth = 1; ctx.fillRect(lb[0] - 8, lb[1] + 5, 16, 8); ctx.strokeRect(lb[0] - 8.5, lb[1] + 4.5, 17, 9);
         ctx.restore();
-        this.box(lb[0] - 12, lb[1] - s * 0.075, ["LANDING FILMED 21:43:07", "vehicle on coastal road · evidence pack sent"], C.net, "right");
+        this.box(lb[0] - 12, lb[1] - s * 0.075, ["LANDING FILMED 21:43:07", "vehicle on coastal road · evidence pack sent"], C.police, "right");
       }
     }
   }
