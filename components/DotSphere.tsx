@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef } from "react";
 import { DotSphere as Globe } from "@/lib/scene/sphere";
-import { prefersReducedMotion, readColors } from "@/lib/scene/common";
+import { readColors } from "@/lib/scene/common";
 import { useAnimationFrame } from "./useAnimationFrame";
 
 /** A living sphere of drones. Square; sized by its container. Leans toward the pointer. */
@@ -11,9 +11,8 @@ export default function DotSphere() {
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const g = new Globe(canvas, readColors(), prefersReducedMotion());
+    const g = new Globe(canvas, readColors(), false);
     globe.current = g;
-    if (prefersReducedMotion()) { for (let i = 0; i < 400; i++) g.step(16.67); g.draw(); }
     const onMove = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
       const nx = ((e.clientX - (r.left + r.width / 2)) / Math.max(1, window.innerWidth / 2));

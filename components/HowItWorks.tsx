@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Panel, { Legend } from "./Panel";
 import { ElevationScene } from "@/lib/scene/elevation";
-import { readColors, prefersReducedMotion } from "@/lib/scene/common";
+import { readColors } from "@/lib/scene/common";
 import { useAnimationFrame } from "./useAnimationFrame";
 import { BRAND } from "@/lib/site";
 
@@ -29,7 +29,7 @@ export default function HowItWorks() {
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const s = new ElevationScene(canvas, readColors(), prefersReducedMotion());
+    const s = new ElevationScene(canvas, readColors(), false);
     scene.current = s;
     document.fonts?.ready.then(() => s.resize());
     return () => { s.destroy(); scene.current = null; };

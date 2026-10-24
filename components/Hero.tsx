@@ -7,7 +7,6 @@ export default function Hero() {
     <section className="hero">
       <div className="wrap">
         <div className="hero-copy">
-          <div className="eyebrow">A shared low-altitude picture</div>
           <h1>Drone detection that scales.</h1>
           <p className="lead">{BRAND} turns the sites that already exist into one network. Every drone is detected, tracked from site to site, and traced back to where it was launched.</p>
           <div className="ctas">
@@ -17,7 +16,6 @@ export default function Hero() {
         </div>
         <div className="sphere">
           <DotSphere />
-          <div className="hero-key" aria-hidden="true"><span><i />Drones in the air</span><span><i className="hot" />Traced by {BRAND}</span></div>
         </div>
       </div>
     </section>

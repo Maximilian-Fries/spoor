@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Panel, { Legend } from "./Panel";
 import { PlanScene } from "@/lib/scene/plan";
-import { readColors, prefersReducedMotion, PHASE_TAGS } from "@/lib/scene/common";
+import { readColors, PHASE_TAGS } from "@/lib/scene/common";
 import { useAnimationFrame } from "./useAnimationFrame";
 
 /** The hero instrument: the shared low-altitude picture, one incident on a loop. */
@@ -13,7 +13,7 @@ export default function PlanView() {
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const s = new PlanScene(canvas, readColors(), prefersReducedMotion());
+    const s = new PlanScene(canvas, readColors(), false);
     s.onPhase = (p) => setTag(PHASE_TAGS[p]);
     scene.current = s;
     document.fonts?.ready.then(() => s.resize());

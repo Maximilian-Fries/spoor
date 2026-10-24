@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Panel from "./Panel";
 import { CoverageScene, type Readout } from "@/lib/scene/coverage";
-import { readColors, prefersReducedMotion } from "@/lib/scene/common";
+import { readColors } from "@/lib/scene/common";
 import { useAnimationFrame } from "./useAnimationFrame";
 
 /** One cluster filling in with host sites; readouts show what the network gains. */
@@ -13,7 +13,7 @@ export default function CoverageGrowth() {
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const s = new CoverageScene(canvas, readColors(), prefersReducedMotion());
+    const s = new CoverageScene(canvas, readColors(), false);
     s.onReadout = setR;
     scene.current = s;
     document.fonts?.ready.then(() => s.resize());
