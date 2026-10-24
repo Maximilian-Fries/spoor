@@ -56,8 +56,7 @@ p { margin: 0; }
   .menu a:last-child { border-bottom: 0; }
 }
 .pill { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 11px 6px 9px; color: var(--fg-2); text-decoration: none; white-space: nowrap; background: var(--bg-2); }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hot); box-shadow: 0 0 0 0 var(--hot-glow); animation: pulse 2.2s ease-out infinite; }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--hot-glow); } 70% { box-shadow: 0 0 0 7px rgba(217, 100, 30, 0); } 100% { box-shadow: 0 0 0 0 rgba(217, 100, 30, 0); } }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hot); }
 
 /* Hero: headline beside a living sphere of drones */
 .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg-2); }
@@ -84,8 +83,7 @@ p { margin: 0; }
 .panel { border: 1px solid var(--line-2); border-radius: 6px; background: var(--bg-2); overflow: hidden; box-shadow: 0 24px 60px -40px rgba(14, 17, 19, 0.35); min-width: 0; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 14px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); }
 .panel-head .live { display: flex; align-items: center; gap: 8px; color: var(--fg-2); }
-.panel-head .live i { width: 6px; height: 6px; border-radius: 50%; background: var(--hot); display: inline-block; animation: blink 1.6s steps(2, start) infinite; }
-@keyframes blink { to { visibility: hidden; } }
+.panel-head .live i { width: 6px; height: 6px; border-radius: 50%; background: var(--hot); display: inline-block; }
 .panel canvas { display: block; width: 100%; aspect-ratio: 16 / 10; max-width: 100%; background: radial-gradient(120% 90% at 70% 30%, rgba(14, 17, 19, 0.035), transparent 60%), var(--bg-2); }
 .panel canvas.elev, .panel canvas.wide { aspect-ratio: 16 / 9; }
 .picture .panel canvas { aspect-ratio: 2 / 1; }
@@ -98,7 +96,6 @@ p { margin: 0; }
 .key i.trace { width: 14px; height: 0; border-radius: 0; border-top: 1.5px dashed var(--hot); }
 .key i.police { background: var(--police); border-radius: 1px; transform: rotate(45deg); width: 7px; height: 7px; }
 .phase-tag { color: var(--fg-2); }
-@media (prefers-reduced-motion: reduce) { .dot, .panel-head .live i { animation: none; } }
 
 /* Sections */
 section { padding-block: 96px; }
@@ -229,8 +226,3 @@ footer { padding-block: 28px 40px; font-family: var(--mono); font-size: 0.72rem;
 footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 footer a { text-decoration: none; }
 footer a:hover { color: var(--fg-2); }
-
-/* Reveal */
-html.js .rv { opacity: 0; transform: translateY(14px); transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
-html.js .rv.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { html.js .rv { opacity: 1; transform: none; transition: none; } }

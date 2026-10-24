@@ -101,6 +101,7 @@ export abstract class Scene {
   ctx: CanvasRenderingContext2D;
   mode: Mode;
   C: Colors;
+  /** still: draw one finished frame instead of animating */
   reduce: boolean;
   boxH: number;
   phase = 0;
@@ -143,7 +144,7 @@ export abstract class Scene {
   setPhase(p: number) { if (p !== this.phase) { this.phase = p; this.phaseStart = performance.now(); } }
 
   state(now: number): { phase: number; u: number } {
-    if (this.reduce) return { phase: 3, u: 1 };
+    if (this.reduce) return { phase: this.mode === "loop" ? 3 : this.phase, u: 1 };
     if (this.mode === "loop") {
       const total = DUR.reduce((a, b) => a + b, 0) + HOLD;
       const t = ((now - this.t0) / 1000) % total;

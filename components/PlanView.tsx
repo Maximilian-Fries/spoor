@@ -3,9 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import Panel, { Legend } from "./Panel";
 import { PlanScene } from "@/lib/scene/plan";
 import { readColors, PHASE_TAGS } from "@/lib/scene/common";
-import { useAnimationFrame } from "./useAnimationFrame";
 
-/** The hero instrument: the shared low-altitude picture, one incident on a loop. */
+/** The shared low-altitude picture: one incident, drawn in its finished state. */
 export default function PlanView() {
   const ref = useRef<HTMLCanvasElement>(null);
   const scene = useRef<PlanScene | null>(null);
@@ -13,13 +12,12 @@ export default function PlanView() {
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const s = new PlanScene(canvas, readColors(), false);
+    const s = new PlanScene(canvas, readColors(), true);
     s.onPhase = (p) => setTag(PHASE_TAGS[p]);
     scene.current = s;
     document.fonts?.ready.then(() => s.resize());
     return () => { s.destroy(); scene.current = null; };
   }, []);
-  useAnimationFrame(ref, (now) => scene.current?.render(now));
 
   return (
     <Panel title="Live picture · Sector NE-4" tag={tag} foot={<Legend />}>

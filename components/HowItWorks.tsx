@@ -1,9 +1,8 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Panel, { Legend } from "./Panel";
 import { ElevationScene } from "@/lib/scene/elevation";
 import { readColors } from "@/lib/scene/common";
-import { useAnimationFrame } from "./useAnimationFrame";
 import { BRAND } from "@/lib/site";
 
 const STEPS = [
@@ -20,7 +19,7 @@ const KEYS = [
   { cls: "police", label: "Police drone" },
 ];
 
-/** Sticky elevation drawing on the left; the step nearest the viewport centre drives its phase. */
+/** Sticky elevation drawing on the left; the step nearest the viewport centre picks which still frame it shows. */
 export default function HowItWorks() {
   const ref = useRef<HTMLCanvasElement>(null);
   const scene = useRef<ElevationScene | null>(null);
@@ -29,12 +28,11 @@ export default function HowItWorks() {
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const s = new ElevationScene(canvas, readColors(), false);
+    const s = new ElevationScene(canvas, readColors(), true);
     scene.current = s;
     document.fonts?.ready.then(() => s.resize());
     return () => { s.destroy(); scene.current = null; };
   }, []);
-  useAnimationFrame(ref, useCallback((now: number) => scene.current?.render(now), []));
 
   useEffect(() => {
     const pick = () => {
@@ -42,7 +40,7 @@ export default function HowItWorks() {
       let best = 0, bestD = Infinity;
       stepRefs.current.forEach((el, i) => { if (!el) return; const r = el.getBoundingClientRect(); const d = Math.abs((r.top + r.bottom) / 2 - mid); if (d < bestD) { bestD = d; best = i; } });
       setActive((a) => (a === best ? a : best));
-      scene.current?.setPhase(best);
+      const s = scene.current; if (s && s.phase !== best) { s.setPhase(best); s.render(performance.now()); }
     };
     pick();
     window.addEventListener("scroll", pick, { passive: true });

@@ -1,11 +1,10 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Panel from "./Panel";
 import { CoverageScene, type Readout } from "@/lib/scene/coverage";
 import { readColors } from "@/lib/scene/common";
-import { useAnimationFrame } from "./useAnimationFrame";
 
-/** One cluster filling in with host sites; readouts show what the network gains. */
+/** One cluster with all its host sites in place; readouts show what the network gains. */
 export default function CoverageGrowth() {
   const ref = useRef<HTMLCanvasElement>(null);
   const scene = useRef<CoverageScene | null>(null);
@@ -13,13 +12,12 @@ export default function CoverageGrowth() {
 
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const s = new CoverageScene(canvas, readColors(), false);
+    const s = new CoverageScene(canvas, readColors(), true);
     s.onReadout = setR;
     scene.current = s;
     document.fonts?.ready.then(() => s.resize());
     return () => { s.destroy(); scene.current = null; };
   }, []);
-  useAnimationFrame(ref, useCallback((now: number) => scene.current?.draw(now / 1000), []));
 
   return (
     <Panel title="Coverage growth · one cluster" tag={r.complete ? "Cluster complete" : "Hosts joining"} foot={
