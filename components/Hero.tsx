@@ -1,16 +1,12 @@
-"use client";
-import { useRef } from "react";
-import Swarm from "./Swarm";
+import DotSphere from "./DotSphere";
 import { BRAND } from "@/lib/site";
 
-/** Headline over a drifting swarm of drones; the flock flows around the text. */
+/** Headline beside a living sphere of drones. */
 export default function Hero() {
-  const copy = useRef<HTMLDivElement>(null);
   return (
     <section className="hero">
-      <Swarm density={5} tracked={3} dotRadius={1.05} avoid={copy} />
       <div className="wrap">
-        <div className="hero-copy" ref={copy}>
+        <div className="hero-copy">
           <div className="eyebrow">A shared low-altitude picture</div>
           <h1>Drone detection that scales.</h1>
           <p className="lead">{BRAND} turns the sites that already exist into one network. Every drone is detected, tracked from site to site, and traced back to where it was launched.</p>
@@ -19,7 +15,10 @@ export default function Hero() {
             <a className="btn" href="#how">How it works</a>
           </div>
         </div>
-        <div className="hero-key" aria-hidden="true"><span><i />Drones in the air</span><span><i className="hot" />Traced by {BRAND}</span></div>
+        <div className="sphere">
+          <DotSphere />
+          <div className="hero-key" aria-hidden="true"><span><i />Drones in the air</span><span><i className="hot" />Traced by {BRAND}</span></div>
+        </div>
       </div>
     </section>
   );

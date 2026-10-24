@@ -20,7 +20,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 a { color: inherit; }
 h1, h2, h3 { font-family: var(--display); font-variation-settings: "wdth" 86; letter-spacing: -0.02em; line-height: 1.02; margin: 0; text-wrap: balance; }
-h1 { font-size: clamp(3rem, 8vw, 6.6rem); font-weight: 600; font-variation-settings: "wdth" 80; letter-spacing: -0.03em; }
+h1 { font-size: clamp(2.8rem, 6vw, 5.4rem); font-weight: 600; font-variation-settings: "wdth" 80; letter-spacing: -0.03em; }
 h2 { font-size: clamp(1.9rem, 3.6vw, 2.9rem); font-weight: 600; }
 h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.005em; font-variation-settings: "wdth" 92; }
 p { margin: 0; }
@@ -59,25 +59,26 @@ p { margin: 0; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hot); box-shadow: 0 0 0 0 var(--hot-glow); animation: pulse 2.2s ease-out infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--hot-glow); } 70% { box-shadow: 0 0 0 7px rgba(217, 100, 30, 0); } 100% { box-shadow: 0 0 0 0 rgba(217, 100, 30, 0); } }
 
-/* Hero: headline over a drifting swarm */
+/* Hero: headline beside a living sphere of drones */
 .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg-2); }
-.hero .wrap { position: relative; z-index: 1; padding-block: clamp(96px, 17vh, 180px) clamp(72px, 12vh, 140px); display: flex; flex-direction: column; gap: 26px; }
-.hero-copy { display: flex; flex-direction: column; gap: 24px; max-width: 20em; position: relative; }
-.hero-copy::before { content: ""; position: absolute; inset: -40px -56px; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75) 65%, transparent); z-index: -1; }
-.hero-copy > * { position: relative; }
-.hero-copy h1 { max-width: 9.2em; }
+.hero .wrap { padding-block: clamp(56px, 9vh, 112px) clamp(48px, 8vh, 96px); display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 40px 56px; align-items: center; }
+.hero-copy { display: flex; flex-direction: column; gap: 24px; }
+.hero-copy h1 { max-width: 7.6em; }
 .hero .lead { font-size: clamp(1.1rem, 1.6vw, 1.35rem); max-width: 30em; color: var(--fg-2); }
 .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.sphere { display: flex; flex-direction: column; gap: 14px; align-items: center; justify-self: end; width: min(100%, 560px); }
+.sphere-canvas { display: block; width: 100%; aspect-ratio: 1 / 1; max-width: 100%; }
+.hero-key { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); }
+.hero-key span { display: inline-flex; align-items: center; gap: 7px; }
+.hero-key i { width: 6px; height: 6px; border-radius: 50%; background: var(--fg); display: inline-block; }
+.hero-key i.hot { background: var(--hot); }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; } .sphere { justify-self: center; width: min(100%, 420px); } }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 4px; font-weight: 500; font-size: 0.95rem; text-decoration: none; border: 1px solid var(--line-2); color: var(--fg); background: var(--bg-2); transition: background 0.2s, border-color 0.2s, transform 0.2s; cursor: pointer; font-family: var(--body); line-height: 1.2; }
 .btn:hover { background: var(--bg-3); border-color: var(--fg-3); transform: translateY(-1px); }
 .btn.primary { background: var(--fg); color: var(--bg-2); border-color: var(--fg); }
 .btn.primary:hover { background: #000; }
 .btn[disabled] { opacity: 0.6; cursor: default; transform: none; }
 .btn svg { width: 14px; height: 14px; }
-.hero-key { display: flex; gap: 22px; flex-wrap: wrap; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); }
-.hero-key span { display: inline-flex; align-items: center; gap: 7px; }
-.hero-key i { width: 6px; height: 6px; border-radius: 50%; background: var(--fg); display: inline-block; }
-.hero-key i.hot { background: var(--hot); }
 
 /* Instrument plate */
 .panel { border: 1px solid var(--line-2); border-radius: 6px; background: var(--bg-2); overflow: hidden; box-shadow: 0 24px 60px -40px rgba(14, 17, 19, 0.35); min-width: 0; }
