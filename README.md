@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Spoor
 
-## Getting Started
+Stealth website for Spoor: a shared sensor network that records drone tracks across many sites, traces an intruder back to its launch area, and cues police drones to follow it home.
 
-First, run the development server:
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run dev` prints two addresses and a QR code. Open the first on this machine and the second, or the QR code, on a phone connected to the same Wi-Fi.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts: `npm run build` then `npm start` for a production build, `npm run lint`, `npm run typecheck`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Where things are
 
-## Learn More
+- `app/` pages: home (`page.tsx`), `/host`, `/imprint`, `/privacy`, and `api/interest` (the register-interest endpoint).
+- `components/` the nav, panels, forms and the three canvas views (`PlanView`, `HowItWorks`, `CoverageGrowth`).
+- `lib/scene/` the drawing code: `plan.ts` (map), `elevation.ts` (side view), `coverage.ts` (cluster growth), `common.ts` (shared machinery).
+- `lib/site.ts` the brand name, contact address, nav links and launch year. Change the name there.
+- `data/interest.jsonl` registrations from the form, one JSON object per line. Local only and ignored by git; swap the route for a database before deploying.
 
-To learn more about Next.js, take a look at the following resources:
+## Before going public
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Register the domain and check the trademark for the name.
+- Replace the placeholder address in `lib/site.ts` and every bracketed item on `/imprint` and `/privacy`.
+- Remove `robots: { index: false }` in `app/layout.tsx` when the site should be found.
