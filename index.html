@@ -1,0 +1,923 @@
+<title>Spoor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: an operations-room page. One instrument panel (the live picture) carries the
+   story; text sits left-aligned on a 1120px grid; mono readouts mark data, sans marks prose. */
+:root{
+  --bg:#0A0E13; --bg-2:#0F141B; --bg-3:#141B24; --bg-4:#1A2330;
+  --line:#1F2933; --line-2:#2C3845;
+  --fg:#E9EEF3; --fg-2:#A9B5C2; --fg-3:#73808E;
+  --net:#7FB3E3; --net-dim:rgba(127,179,227,.22); --net-glow:rgba(127,179,227,.55);
+  --hot:#F0A54A; --hot-dim:rgba(240,165,74,.28); --hot-glow:rgba(240,165,74,.6);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --max:1120px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-variation-settings:"wdth" 88;letter-spacing:-.015em;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.6rem,6.2vw,4.9rem);font-weight:650}
+h2{font-size:clamp(1.9rem,3.6vw,2.9rem);font-weight:620}
+h3{font-size:1.2rem;font-weight:600;letter-spacing:-.005em;font-variation-settings:"wdth" 92}
+p{margin:0}
+.wrap{max-width:var(--max);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--net);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--net);opacity:.8}
+.lead{font-size:clamp(1.05rem,1.4vw,1.25rem);color:var(--fg-2);max-width:34em}
+.mono{font-family:var(--mono)}
+.muted{color:var(--fg-3)}
+:focus-visible{outline:2px solid var(--net);outline-offset:3px;border-radius:2px}
+
+/* Nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(10,14,19,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+.wordmark{display:flex;align-items:center;gap:9px;text-decoration:none;font-family:var(--display);font-weight:600;font-variation-settings:"wdth" 100;letter-spacing:-.02em;font-size:1.18rem;color:var(--fg)}
+.wordmark svg{width:22px;height:22px;color:var(--fg)}
+.navlinks{display:flex;gap:26px;align-items:center;font-size:.9rem;color:var(--fg-2)}
+.navlinks a{text-decoration:none}
+.navlinks a:hover{color:var(--fg)}
+@media (max-width:720px){.navlinks a.hide-m{display:none}}
+.pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-2);border-radius:999px;padding:6px 11px 6px 9px;color:var(--fg-2);text-decoration:none;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--hot);box-shadow:0 0 0 0 var(--hot-glow);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 var(--hot-glow)}70%{box-shadow:0 0 0 7px rgba(240,165,74,0)}100%{box-shadow:0 0 0 0 rgba(240,165,74,0)}}
+
+/* Hero */
+.hero{padding-block:56px 40px;position:relative}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:center}
+.hero-copy{display:flex;flex-direction:column;gap:22px}
+.hero-copy h1{max-width:9em}
+.ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:4px;font-weight:500;font-size:.95rem;text-decoration:none;border:1px solid var(--line-2);color:var(--fg);background:var(--bg-2);transition:background .2s,border-color .2s,transform .2s}
+.btn:hover{background:var(--bg-3);border-color:var(--fg-3);transform:translateY(-1px)}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.primary:hover{background:#fff}
+.btn svg{width:14px;height:14px}
+.hero-note{font-size:.92rem;color:var(--fg-3);max-width:34em;border-left:1px solid var(--line-2);padding-left:14px}
+.hero-note b{color:var(--fg-2);font-weight:500}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:28px}.hero{padding-block:36px 24px}}
+
+/* Instrument panel */
+.panel{border:1px solid var(--line-2);border-radius:6px;background:var(--bg-2);overflow:hidden;box-shadow:0 30px 80px -40px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.03);min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3)}
+.panel-head .live{display:flex;align-items:center;gap:8px;color:var(--fg-2)}
+.panel-head .live i{width:6px;height:6px;border-radius:50%;background:var(--net);display:inline-block;animation:blink 1.6s steps(2,start) infinite}
+@keyframes blink{to{visibility:hidden}}
+.panel canvas{display:block;width:100%;aspect-ratio:16/10;max-width:100%;background:
+  radial-gradient(120% 90% at 70% 30%,rgba(127,179,227,.06),transparent 60%),var(--bg-2)}
+.panel canvas.elev{aspect-ratio:16/9}
+@media (max-width:900px){.panel canvas{aspect-ratio:4/3}.panel canvas.elev{aspect-ratio:16/10}}
+.panel-foot{display:flex;gap:16px 22px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--fg-3);text-transform:uppercase}
+.key{display:inline-flex;align-items:center;gap:7px}
+.key i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.key i.net{border:1.5px solid var(--net)}
+.key i.hot{background:var(--hot)}
+.key i.trace{width:14px;height:0;border-radius:0;border-top:1.5px dashed var(--hot)}
+.key i.police{background:var(--net);border-radius:1px;transform:rotate(45deg);width:7px;height:7px}
+.phase-tag{color:var(--fg-2)}
+@media (prefers-reduced-motion:reduce){.dot,.panel-head .live i{animation:none}}
+
+/* Sections */
+section{padding-block:96px}
+@media (max-width:720px){section{padding-block:64px}}
+.sec-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:28px 48px;align-items:end;margin-bottom:48px}
+.sec-head .eyebrow{margin-bottom:18px}
+@media (max-width:900px){.sec-head{grid-template-columns:1fr;margin-bottom:36px}}
+.rule{border:0;border-top:1px solid var(--line);margin:0}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line-2);border-radius:6px;overflow:hidden;background:var(--bg-2)}
+.stat{padding:22px 22px 20px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:8px;min-width:0}
+.stat:last-child{border-right:0}
+.stat .n{font-family:var(--display);font-variation-settings:"wdth" 82;font-weight:650;font-size:clamp(2.2rem,3.6vw,3rem);line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .n small{font-size:.5em;color:var(--fg-2);font-weight:500;letter-spacing:0}
+.stat .l{font-size:.93rem;color:var(--fg-2);line-height:1.4}
+.stat .s{font-family:var(--mono);font-size:.68rem;color:var(--fg-3);letter-spacing:.02em;margin-top:auto;padding-top:8px}
+@media (max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media (max-width:460px){.stats{grid-template-columns:1fr}.stat{border-right:0;border-bottom:1px solid var(--line)}.stat:last-child{border-bottom:0}}
+.gap-line{margin-top:40px;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px 48px}
+.gap-line p{font-size:1.15rem;color:var(--fg);max-width:30em}
+.gap-line .q{border-left:2px solid var(--hot);padding-left:18px;color:var(--fg-2);font-size:.98rem}
+.gap-line .q .s{display:block;font-family:var(--mono);font-size:.68rem;color:var(--fg-3);margin-top:8px;letter-spacing:.02em}
+@media (max-width:900px){.gap-line{grid-template-columns:1fr}}
+
+/* Three outputs */
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--line-2)}
+.three > div{padding:28px 28px 28px 0;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.three > div + div{padding-left:28px}
+.three > div:last-child{border-right:0}
+.three .k{font-family:var(--mono);font-size:.7rem;color:var(--hot);letter-spacing:.1em;text-transform:uppercase}
+.three p{color:var(--fg-2);font-size:.98rem}
+@media (max-width:760px){.three{grid-template-columns:1fr}.three > div{border-right:0;border-bottom:1px solid var(--line);padding:24px 0}.three > div + div{padding-left:0}}
+
+/* How it works */
+.how{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:start}
+.how .sticky{position:sticky;top:calc(76px + env(safe-area-inset-top,0px))}
+.steps{display:flex;flex-direction:column}
+.step{padding:34px 0 34px 28px;border-left:1px solid var(--line);position:relative;transition:opacity .35s;display:flex;flex-direction:column;gap:10px;min-height:46vh;justify-content:center}
+.step:first-child{padding-top:8px}.step:last-child{padding-bottom:8px}
+.step::before{content:"";position:absolute;left:-1px;top:0;bottom:0;width:1px;background:var(--hot);transform:scaleY(0);transform-origin:top;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.step.active::before{transform:scaleY(1)}
+.step .num{font-family:var(--mono);font-size:.72rem;color:var(--fg-3);letter-spacing:.12em}
+.step.active .num{color:var(--hot)}
+.step p{color:var(--fg-2);font-size:1rem;max-width:30em}
+.steps .step:not(.active){opacity:.45}
+@media (max-width:900px){.how{grid-template-columns:1fr;gap:24px}.how .sticky{top:calc(60px + env(safe-area-inset-top,0px));z-index:2}.step{min-height:0;padding:22px 0 22px 20px}.steps .step:not(.active){opacity:.6}}
+
+/* Who */
+.who{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:28px;align-items:stretch}
+.buyers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+.buyer{background:var(--bg);padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.buyer h3{padding-top:10px;border-top:1px solid var(--line-2)}
+.buyer p{color:var(--fg-2);font-size:.95rem}
+.buyer .c{font-family:var(--mono);font-size:.68rem;color:var(--fg-3);letter-spacing:.06em;text-transform:uppercase;margin-top:auto;padding-top:6px}
+.host{border:1px solid var(--line-2);border-radius:6px;padding:28px;background:linear-gradient(180deg,rgba(127,179,227,.06),transparent 60%),var(--bg-2);display:flex;flex-direction:column;gap:14px}
+.host h3{font-size:1.45rem}
+.host p{color:var(--fg-2)}
+.host ul{margin:4px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;color:var(--fg-2);font-size:.95rem}
+.host li{display:flex;gap:10px;align-items:flex-start}
+.host li::before{content:"";flex:none;width:8px;height:8px;border:1.5px solid var(--net);border-radius:50%;margin-top:7px}
+.host .btn{align-self:flex-start;margin-top:8px}
+@media (max-width:900px){.who{grid-template-columns:1fr}}
+@media (max-width:560px){.buyers{grid-template-columns:1fr}}
+
+/* Network effect */
+.net{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:center}
+.net-copy{display:flex;flex-direction:column;gap:18px}
+.net-copy p{color:var(--fg-2)}
+.readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+.readout{padding:12px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:3px;min-width:0}
+.readout:last-child{border-right:0}
+.readout .k{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3)}
+.readout .v{font-family:var(--mono);font-size:1.05rem;color:var(--fg);font-variant-numeric:tabular-nums}
+.readout .v em{font-style:normal;color:var(--net)}
+@media (max-width:900px){.net{grid-template-columns:1fr}}
+.net .panel canvas{aspect-ratio:16/9}
+
+/* Stealth */
+.stealth{position:relative;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);background:
+  radial-gradient(80% 120% at 85% 10%,rgba(240,165,74,.10),transparent 55%),
+  radial-gradient(60% 80% at 10% 90%,rgba(127,179,227,.08),transparent 55%),var(--bg-2);overflow:hidden}
+.stealth::after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;opacity:.35;mask-image:radial-gradient(70% 70% at 60% 40%,#000,transparent);-webkit-mask-image:radial-gradient(70% 70% at 60% 40%,#000,transparent);pointer-events:none}
+.stealth .wrap{position:relative;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:end}
+.stealth h2{font-size:clamp(2.4rem,5.4vw,4.2rem);font-weight:650}
+.stealth .lead{margin-top:18px}
+.status{border:1px solid var(--line-2);border-radius:6px;background:rgba(10,14,19,.7);backdrop-filter:blur(6px);font-family:var(--mono);font-size:.8rem;overflow:hidden}
+.status .row{display:grid;grid-template-columns:92px 1fr;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.status .row:last-child{border-bottom:0}
+.status .k{color:var(--fg-3);letter-spacing:.1em;text-transform:uppercase;font-size:.66rem;padding-top:3px}
+.status .v{color:var(--fg);min-width:0;overflow-wrap:anywhere}
+.status .v .st{display:inline-flex;align-items:center;gap:8px;color:var(--hot)}
+.status .v .clock{color:var(--fg-2)}
+.contact{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.contact code{font-family:var(--mono);font-size:.95rem;background:var(--bg-3);border:1px solid var(--line-2);padding:8px 12px;border-radius:4px;user-select:all}
+.copy{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--line-2);color:var(--fg-2);padding:8px 10px;border-radius:4px;cursor:pointer}
+.copy:hover{color:var(--fg);border-color:var(--fg-3)}
+@media (max-width:900px){.stealth .wrap{grid-template-columns:1fr}}
+
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:.72rem;color:var(--fg-3);letter-spacing:.04em}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{text-decoration:none}
+footer a:hover{color:var(--fg-2)}
+
+/* Reveal */
+html.js .rv{opacity:0;transform:translateY(14px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+html.js .rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html.js .rv{opacity:1;transform:none;transition:none}}
+</style>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="wordmark" href="#top" aria-label="Spoor, home">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="19.2" cy="4.8" r="1.3" fill="currentColor" opacity=".38"/><circle cx="14.6" cy="9.4" r="1.9" fill="currentColor" opacity=".66"/><circle cx="8.6" cy="15.4" r="2.9" fill="currentColor"/></svg>
+      <span class="brand">Luftlage</span>
+    </a>
+    <nav class="navlinks" aria-label="Sections">
+      <a class="hide-m" href="#why">Why</a>
+      <a class="hide-m" href="#how">How it works</a>
+      <a class="hide-m" href="#who">Who it is for</a>
+      <a class="pill" href="#stealth"><span class="dot" aria-hidden="true"></span>Stealth · 2027</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow">Low-altitude attribution</div>
+      <h1>Every drone leaves a trail.</h1>
+      <p class="lead"><span class="brand">Luftlage</span> is a shared sensor network that records every drone track across many sites, follows the trail back to where the drone was launched, and cues the police drones already in service to follow it home.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#how">See how it works <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn" href="#stealth">Register interest</a>
+      </div>
+      <p class="hero-note">Detecting a drone is becoming a commodity. <b>Proving where it came from is not.</b> That is the problem we exist to solve.</p>
+    </div>
+    <div class="panel" id="heroPanel">
+      <div class="panel-head"><span class="live"><i></i>Live picture · Sector NE-4</span><span class="phase-tag" id="heroPhase">7 host nodes</span></div>
+      <canvas id="heroCanvas" aria-label="Animated map: seven host nodes track an intruding drone, trace it back to a launch area on the coast, and cue a police drone that follows it to its landing." role="img"></canvas>
+      <div class="panel-foot">
+        <span class="key"><i class="net"></i>Host node</span>
+        <span class="key"><i class="hot"></i>Intruder track</span>
+        <span class="key"><i class="trace"></i>Trace-back</span>
+        <span class="key"><i class="police"></i>Police drone</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr class="rule"></div>
+
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">Why <span class="brand">Luftlage</span> exists</div>
+        <h2>When a drone closes an airport, nobody can say where it came from.</h2>
+      </div>
+      <p class="lead">Drones are shutting runways, dropping contraband into prisons and crossing military bases. The sensors to detect them exist. What does not exist is an answer to the question that decides the response: who flew it, and from where.</p>
+    </div>
+    <div class="stats rv">
+      <div class="stat"><div class="n">116</div><div class="l">full or partial closures of German airports over unidentified drones in 2025</div><div class="s">Der Spiegel / DLR, June 2026</div></div>
+      <div class="stat"><div class="n">€160<small>M</small></div><div class="l">estimated cost of those closures to airlines and airports</div><div class="s">Der Spiegel / DLR, June 2026</div></div>
+      <div class="stat"><div class="n">3 <small>of 13</small></div><div class="l">drone incidents in Saxony where police identified the pilot, first half of 2026</div><div class="s">Saxon state parliament, 2026</div></div>
+      <div class="stat"><div class="n">1,000<small>+</small></div><div class="l">suspicious drone flights over critical sites, military bases and defense firms in Germany in 2025</div><div class="s">Federal Criminal Police (BKA)</div></div>
+    </div>
+    <div class="gap-line rv">
+      <p>Without attribution every incident ends the same way. The drone leaves, the pilot is never found, and nobody can say whether it was a hobbyist or a hostile act. In our research we found no product that turns sensor tracks into evidence of a launch point. That is the gap <span class="brand">Luftlage</span> closes.</p>
+      <div class="q">After 144 suspected drone sightings across Europe since 2024, investigators could not tie a single drone to a launch site with signals, wreckage or video. Sweden's military representative to NATO calls attribution often almost impossible.<span class="s">IISS report and critique, July 2026</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr class="rule"></div>
+
+<section id="what">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">What <span class="brand">Luftlage</span> delivers</div>
+        <h2>A track, a launch area, and proof.</h2>
+      </div>
+      <p class="lead">One site sees a dot for a few seconds. A network of sites sees a path, and a path has a beginning.</p>
+    </div>
+    <div class="three rv">
+      <div><div class="k">Output 1</div><h3>A track across sites</h3><p>Nodes hosted by many sites hand a drone from one to the next, so a track does not end at a fence. The network records every track it sees.</p></div>
+      <div><div class="k">Output 2</div><h3>A launch area</h3><p>Replayed backwards, a track leads to where the drone entered coverage. The heading beyond that point gives an estimated launch area, on a road or off the coast.</p></div>
+      <div><div class="k">Output 3</div><h3>Evidence that holds up</h3><p>Cued by the network, a police drone follows the intruder until it lands and films where it goes. A reusable drone has to return to someone.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr class="rule"></div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">How it works</div>
+        <h2>From the first detection to a filmed landing.</h2>
+      </div>
+      <p class="lead">Scroll through one incident. Each step is what the network does with the step before it.</p>
+    </div>
+    <div class="how">
+      <div class="sticky">
+        <div class="panel">
+          <div class="panel-head"><span class="live"><i></i>Elevation · TRK-0417</span><span class="phase-tag" id="howPhase">Step 1 of 4</span></div>
+          <canvas id="howCanvas" class="elev" aria-label="Side elevation of the incident: masts with coverage domes along six kilometres of ground, the drone at eighty metres, the trace back to a vehicle on the coastal road, and the police drone that follows it." role="img"></canvas>
+          <div class="panel-foot">
+            <span class="key"><i class="net"></i>Node and coverage</span>
+            <span class="key"><i class="hot"></i>Intruder</span>
+            <span class="key"><i class="trace"></i>Trace-back</span>
+            <span class="key"><i class="police"></i>Police drone</span>
+          </div>
+        </div>
+      </div>
+      <div class="steps" id="steps">
+        <div class="step active" data-phase="0"><div class="num">01 / 04</div><h3>Sites host nodes</h3><p>A node is a small box with microphones, a camera and passive radio receivers. Companies, operators and public buildings mount one and get local alerts. Classification runs on the device, and no audio leaves it.</p></div>
+        <div class="step" data-phase="1"><div class="num">02 / 04</div><h3>The network tracks</h3><p>As a drone crosses coverage, nodes hand its track from one to the next and fuse their bearings into one position. A single site sees a dot. The network sees a path.</p></div>
+        <div class="step" data-phase="2"><div class="num">03 / 04</div><h3>The track is traced back</h3><p>Every track is recorded. Replayed backwards it leads to the point where the drone entered coverage, and the heading beyond gives an estimated launch area, with the uncertainty stated.</p></div>
+        <div class="step" data-phase="3"><div class="num">04 / 04</div><h3>A police drone follows it home</h3><p><span class="brand">Luftlage</span> cues drones that police already operate. The chase drone follows the intruder until it lands and films where it goes. That recording is the proof.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr class="rule"></div>
+
+<section id="who">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">Who it is for</div>
+        <h2>Built for those who have to act on a drone.</h2>
+      </div>
+      <p class="lead">The picture and the proof go to the authorities that must respond. The sites in between host the sensors and get the earliest warning.</p>
+    </div>
+    <div class="who rv">
+      <div class="buyers">
+        <div class="buyer"><h3>Police and military</h3><p>One shared picture across many sites, and a trail that leads to the pilot instead of ending at the fence.</p><div class="c">Primary buyer</div></div>
+        <div class="buyer"><h3>Airports</h3><p>Confirm or clear a sighting in minutes and follow the drone toward its pilot, instead of closing the runway and waiting.</p><div class="c">116 closures in Germany, 2025</div></div>
+        <div class="buyer"><h3>Prisons and corrections</h3><p>The drop point and the pilot's position as it happens, and evidence that supports an arrest.</p><div class="c">373 contraband drops, Georgia, 2025</div></div>
+        <div class="buyer"><h3>Navies and coast guards</h3><p>Track history toward the coast, and chase-drone video of where the drone lands, when a launch from a ship is suspected but cannot be shown.</p><div class="c">Baltic and North Sea first</div></div>
+      </div>
+      <div class="host">
+        <div class="eyebrow">Host a node</div>
+        <h3>Your site becomes part of the picture.</h3>
+        <p>Companies, operators and public buildings host a node. In return they get what a single site cannot buy on its own.</p>
+        <ul>
+          <li>Local alerts with an evidence pack for the police.</li>
+          <li>Early warning from neighbouring nodes, before the drone arrives.</li>
+          <li>A log of every overflight for insurers, auditors and regulators.</li>
+          <li>Every node you add makes everyone's traces longer.</li>
+        </ul>
+        <a class="btn" href="#stealth">Ask about hosting</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr class="rule"></div>
+
+<section id="network">
+  <div class="wrap">
+    <div class="net">
+      <div class="net-copy rv">
+        <div class="eyebrow">Why it compounds</div>
+        <h2>Every new site makes every trace longer.</h2>
+        <p>A single site sees a drone for seconds. Neighbouring nodes see it before it arrives, tracks across sites lead back to a launch point, and each site adds data that cuts false alarms.</p>
+        <p>Coverage grows cluster by cluster: an industrial park, a port, a defense-industry region. The state pays for the combined picture. The hosts make it exist.</p>
+      </div>
+      <div class="panel rv">
+        <div class="panel-head"><span class="live"><i></i>Coverage growth · one cluster</span><span class="phase-tag" id="netTag">Hosts joining</span></div>
+        <canvas id="netCanvas" aria-label="Animated diagram: as more sites host nodes, the tracked portion of a sample drone path grows and warning time increases." role="img"></canvas>
+        <div class="readouts">
+          <div class="readout"><div class="k">Host sites</div><div class="v" id="roHosts">3</div></div>
+          <div class="readout"><div class="k">Track seen</div><div class="v" id="roTrack">0.6 <em>km</em></div></div>
+          <div class="readout"><div class="k">Warning before arrival</div><div class="v" id="roWarn">22 <em>s</em></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stealth" id="stealth">
+  <div class="wrap">
+    <div class="rv">
+      <div class="eyebrow">Status</div>
+      <h2 style="margin-top:16px">We are in stealth.<br>Coming 2027.</h2>
+      <p class="lead"><span class="brand">Luftlage</span> is being built with police drone units and a first corridor of host sites. We are not taking customers yet. If you run drones for a police force, protect an airport or a prison, or want to host a node, we would like to talk.</p>
+      <div class="contact" style="margin-top:26px">
+        <code id="mail">hello@spoor.io</code>
+        <button class="copy" type="button" id="copyBtn">Copy address</button>
+      </div>
+    </div>
+    <div class="status rv" aria-label="Company status">
+      <div class="row"><div class="k">Status</div><div class="v"><span class="st"><span class="dot" aria-hidden="true"></span>Stealth</span></div></div>
+      <div class="row"><div class="k">Now</div><div class="v">Corridor test: 3 to 5 nodes along a 2 to 3 km corridor, test drones flown through it</div></div>
+      <div class="row"><div class="k">Next</div><div class="v">First chase-drone cue with a police partner</div></div>
+      <div class="row"><div class="k">Launch</div><div class="v">2027, Germany first</div></div>
+      <div class="row"><div class="k">Clock</div><div class="v clock" id="clock">— UTC</div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 <span class="brand">Luftlage</span> · spoor, n.: a trail followed back to where it began · Built in Europe</span>
+    <span>Figures from public sources, 2025 to 2026 · <a href="#top">Imprint</a> · <a href="#top">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  // Change the company name in one place.
+  var BRAND = 'Spoor';
+  document.querySelectorAll('.brand').forEach(function(el){ el.textContent = BRAND; });
+  if (document.title !== BRAND) document.title = BRAND;
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches && !/motion=1/.test(location.search);
+  document.documentElement.classList.add('js');
+
+  /* ---------- Scene: the shared low-altitude picture ---------- */
+  var css = getComputedStyle(document.documentElement);
+  var C = {
+    net: css.getPropertyValue('--net').trim() || '#7FB3E3',
+    hot: css.getPropertyValue('--hot').trim() || '#F0A54A',
+    fg: css.getPropertyValue('--fg').trim() || '#E9EEF3',
+    fg2: css.getPropertyValue('--fg-2').trim() || '#A9B5C2',
+    fg3: css.getPropertyValue('--fg-3').trim() || '#73808E',
+    line: css.getPropertyValue('--line').trim() || '#1F2933',
+    line2: css.getPropertyValue('--line-2').trim() || '#2C3845',
+    bg: css.getPropertyValue('--bg-2').trim() || '#0F141B'
+  };
+  var MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+
+  var NODES = [
+    {x:.17,y:.45,r:.085,name:'Substation'},
+    {x:.31,y:.29,r:.085,name:'Logistics depot'},
+    {x:.45,y:.42,r:.10,name:'Industrial park'},
+    {x:.58,y:.215,r:.085,name:'Port terminal'},
+    {x:.70,y:.375,r:.085,name:'Supplier plant'},
+    {x:.81,y:.20,r:.085,name:'Coast station'},
+    {x:.33,y:.565,r:.075,name:'Public works'}
+  ];
+  var DOCK = {x:.52,y:.555,name:'Police drone dock'};
+  var LAUNCH = {x:.905,y:.125};
+  var CTRL = [[.905,.125],[.80,.21],[.62,.255],[.47,.375],[.50,.465],[.64,.39],[.79,.25],[.90,.135]];
+  var COAST = [[.78,0],[.86,.05],[.93,.10],[1.0,.14]];
+  var ROAD = [[.70,.04],[.80,.09],[.87,.14],[.93,.195],[1.0,.25]];
+  var ROAD2 = [[0,.61],[.25,.60],[.45,.615],[.60,.56],[.75,.53],[1.0,.48]];
+
+  // Catmull-Rom resample, arc-length parameterised
+  function buildPath(ctrl, n){
+    var pts=[], i, t, p0,p1,p2,p3;
+    for(i=0;i<ctrl.length-1;i++){
+      p0=ctrl[Math.max(0,i-1)]; p1=ctrl[i]; p2=ctrl[i+1]; p3=ctrl[Math.min(ctrl.length-1,i+2)];
+      for(t=0;t<1;t+=1/n){
+        var t2=t*t,t3=t2*t;
+        pts.push([
+          .5*((2*p1[0])+(-p0[0]+p2[0])*t+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+          .5*((2*p1[1])+(-p0[1]+p2[1])*t+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)
+        ]);
+      }
+    }
+    pts.push(ctrl[ctrl.length-1].slice());
+    var cum=[0], L=0;
+    for(i=1;i<pts.length;i++){ L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); cum.push(L); }
+    return {pts:pts, cum:cum, len:L};
+  }
+  var PATH = buildPath(CTRL, 60);
+  function atP(P,s){ // s in [0,1] by arc length
+    var d=Math.max(0,Math.min(1,s))*P.len, lo=0, hi=P.cum.length-1;
+    while(hi-lo>1){ var m=(lo+hi)>>1; if(P.cum[m]<d) lo=m; else hi=m; }
+    var a=P.pts[lo], b=P.pts[hi], seg=P.cum[hi]-P.cum[lo], f=seg?(d-P.cum[lo])/seg:0;
+    return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f];
+  }
+  function at(s){ return atP(PATH,s); }
+  function inCoverage(p){ for(var i=0;i<NODES.length;i++){ var n=NODES[i]; if(Math.hypot(p[0]-n.x,p[1]-n.y)<n.r) return true; } return false; }
+  var S_DET=0; (function(){ for(var s=0;s<=1;s+=.002){ if(inCoverage(at(s))){ S_DET=s; return; } } })();
+  var S_TARGET=.47;
+
+  var ease=function(t){ t=Math.max(0,Math.min(1,t)); return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2; };
+  var easeOut=function(t){ t=Math.max(0,Math.min(1,t)); return 1-Math.pow(1-t,3); };
+  var clamp01=function(t){ return Math.max(0,Math.min(1,t)); };
+  var DUR=[3,6,4,7.5], HOLD=1.6;
+  var PHASE_TAGS=['Nodes online','Tracking','Tracing back','Following home'];
+
+  function Scene(canvas, mode){
+    this.c=canvas; this.ctx=canvas.getContext('2d'); this.mode=mode;
+    this.phase=0; this.phaseStart=performance.now(); this.t0=performance.now();
+    this.visible=true; this.onPhase=null;
+    var self=this;
+    this.resize();
+    if (window.ResizeObserver) new ResizeObserver(function(){ self.resize(); }).observe(canvas);
+  }
+  Scene.prototype.resize=function(){
+    var r=this.c.getBoundingClientRect(); if(!r.width) return;
+    var d=Math.min(2,window.devicePixelRatio||1);
+    this.c.width=Math.round(r.width*d); this.c.height=Math.round(r.height*d);
+    this.W=r.width; this.H=r.height; this.ctx.setTransform(d,0,0,d,0,0);
+    var s=Math.max(this.W, this.H/0.62); this.s=s; this.ox=(this.W-s)/2; this.oy=(this.H-s*0.62)/2;
+    this.small=this.W<520;
+    this.render(performance.now());
+  };
+  Scene.prototype.P=function(x,y){ return [this.ox+x*this.s, this.oy+y*this.s]; };
+  Scene.prototype.setPhase=function(p){ if(p!==this.phase){ this.phase=p; this.phaseStart=performance.now(); } };
+  Scene.prototype.state=function(now){
+    if(reduce) return {phase:3,u:1};
+    if(this.mode==='loop'){
+      var total=DUR.reduce(function(a,b){return a+b;},0)+HOLD, t=((now-this.t0)/1000)%total, acc=0;
+      for(var i=0;i<DUR.length;i++){ if(t<acc+DUR[i]) return {phase:i,u:(t-acc)/DUR[i]}; acc+=DUR[i]; }
+      return {phase:3,u:1};
+    }
+    var e=((now-this.phaseStart)/1000)%(DUR[this.phase]+HOLD);
+    return {phase:this.phase,u:Math.min(1,e/DUR[this.phase])};
+  };
+  Scene.prototype.render=function(now){
+    var st=this.state(now); this.draw(st.phase, st.u, now/1000);
+    if(this.onPhase && st.phase!==this.lastPhase){ this.lastPhase=st.phase; this.onPhase(st.phase); }
+  };
+  Scene.prototype.label=function(x,y,title,sub,color,align){
+    var ctx=this.ctx, pad=6, fs=this.small?9:10.5;
+    ctx.save(); ctx.font='500 '+fs+'px '+MONO;
+    var w1=ctx.measureText(title).width; ctx.font='400 '+fs+'px '+MONO; var w2=sub?ctx.measureText(sub).width:0;
+    var w=Math.max(w1,w2)+pad*2, h=sub?fs*2.6+pad*2:fs*1.3+pad*2;
+    var lx=align==='right'?x-w:x, ly=y;
+    if(lx+w>this.W-6) lx=Math.min(x,this.W-6)-w-(align==='right'?0:24); if(lx<6) lx=6;
+    if(ly+h>this.H-6) ly=this.H-6-h; if(ly<6) ly=6;
+    ctx.fillStyle='rgba(10,14,19,.86)'; ctx.strokeStyle=color; ctx.lineWidth=1; ctx.globalAlpha=.9;
+    ctx.beginPath(); ctx.rect(lx+.5,ly+.5,w,h); ctx.fill(); ctx.stroke();
+    ctx.fillRect(lx, ly, 2, h);
+    ctx.globalAlpha=1; ctx.textBaseline='top'; ctx.fillStyle=color; ctx.font='500 '+fs+'px '+MONO;
+    ctx.fillText(title, lx+pad+2, ly+pad);
+    if(sub){ ctx.fillStyle=C.fg2; ctx.font='400 '+fs+'px '+MONO; ctx.fillText(sub, lx+pad+2, ly+pad+fs*1.4); }
+    ctx.restore();
+  };
+  Scene.prototype.poly=function(pts){ var ctx=this.ctx; ctx.beginPath(); for(var i=0;i<pts.length;i++){ var p=this.P(pts[i][0],pts[i][1]); if(i)ctx.lineTo(p[0],p[1]); else ctx.moveTo(p[0],p[1]); } };
+  Scene.prototype.drone=function(x,y,color,alpha,heading){
+    var ctx=this.ctx, p=this.P(x,y), r=this.small?3:4;
+    ctx.save(); ctx.globalAlpha=alpha; ctx.translate(p[0],p[1]); ctx.rotate(heading||0);
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(-r*1.3,-r*1.3); ctx.lineTo(r*1.3,r*1.3); ctx.moveTo(-r*1.3,r*1.3); ctx.lineTo(r*1.3,-r*1.3); ctx.stroke();
+    var k=[[-1,-1],[1,-1],[1,1],[-1,1]];
+    for(var i=0;i<4;i++){ ctx.beginPath(); ctx.arc(k[i][0]*r*1.3,k[i][1]*r*1.3,r*.55,0,Math.PI*2); ctx.fill(); }
+    ctx.beginPath(); ctx.arc(0,0,r*.5,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  };
+  Scene.prototype.police=function(x,y,alpha){
+    var ctx=this.ctx, p=this.P(x,y), r=this.small?4:5.5;
+    ctx.save(); ctx.globalAlpha=alpha; ctx.translate(p[0],p[1]); ctx.rotate(Math.PI/4);
+    ctx.fillStyle=C.net; ctx.fillRect(-r/2,-r/2,r,r);
+    ctx.strokeStyle=C.net; ctx.lineWidth=1; ctx.globalAlpha=alpha*.6; ctx.strokeRect(-r,-r,r*2,r*2);
+    ctx.restore();
+  };
+  Scene.prototype.draw=function(phase,u,time){
+    var ctx=this.ctx, W=this.W, H=this.H, s=this.s, i, p, n;
+    ctx.clearRect(0,0,W,H);
+
+    // grid
+    ctx.save(); ctx.strokeStyle=C.line; ctx.lineWidth=1; ctx.globalAlpha=.7;
+    var g=s/16;
+    for(var x=this.ox%g; x<W; x+=g){ ctx.beginPath(); ctx.moveTo(Math.round(x)+.5,0); ctx.lineTo(Math.round(x)+.5,H); ctx.stroke(); }
+    for(var y=this.oy%g; y<H; y+=g){ ctx.beginPath(); ctx.moveTo(0,Math.round(y)+.5); ctx.lineTo(W,Math.round(y)+.5); ctx.stroke(); }
+    ctx.restore();
+
+    // sea hatch + coast
+    ctx.save();
+    this.poly(COAST); var e=this.P(1.0,.14), t0=this.P(.78,0);
+    ctx.lineTo(e[0]+s,e[1]); ctx.lineTo(e[0]+s,t0[1]-s); ctx.lineTo(t0[0],t0[1]-s); ctx.closePath();
+    ctx.clip();
+    ctx.strokeStyle=C.net; ctx.globalAlpha=.10; ctx.lineWidth=1;
+    for(var hx=-H; hx<W+H; hx+=7){ ctx.beginPath(); ctx.moveTo(hx,0); ctx.lineTo(hx+H,H); ctx.stroke(); }
+    ctx.restore();
+    ctx.save(); ctx.strokeStyle=C.net; ctx.globalAlpha=.45; ctx.lineWidth=1.2; this.poly(COAST); ctx.stroke(); ctx.restore();
+    // roads
+    ctx.save(); ctx.strokeStyle=C.line2; ctx.lineWidth=1.5; ctx.globalAlpha=.9; this.poly(ROAD); ctx.stroke(); this.poly(ROAD2); ctx.stroke(); ctx.restore();
+    if(!this.small){ ctx.save(); ctx.fillStyle=C.fg3; ctx.font='400 9px '+MONO; ctx.globalAlpha=.8; p=this.P(.955,.03); ctx.fillText('SEA',p[0],p[1]); p=this.P(.72,.07); ctx.fillText('COASTAL ROAD',p[0]-10,p[1]-6); ctx.restore(); }
+
+    // site footprints
+    ctx.save(); ctx.strokeStyle=C.line2; ctx.lineWidth=1; ctx.globalAlpha=.9;
+    for(i=0;i<NODES.length;i++){ n=NODES[i]; p=this.P(n.x,n.y); var w=s*.055, h=s*.034; ctx.save(); ctx.translate(p[0],p[1]); ctx.rotate((i%3-1)*.25); ctx.strokeRect(-w/2,-h/2,w,h); ctx.restore(); }
+    ctx.restore();
+
+    // nodes
+    var dronePos=null, droneS=null, heading=0;
+    if(phase===1) droneS=u*S_TARGET;
+    else if(phase===2) droneS=S_TARGET;
+    else if(phase===3) droneS=S_TARGET+(1-S_TARGET)*ease(u);
+    if(droneS!==null){ dronePos=at(droneS); var ahead=at(Math.min(1,droneS+.01)); heading=Math.atan2(ahead[1]-dronePos[1],ahead[0]-dronePos[0]); if(phase===2){ var w2=time*1.4; dronePos=[dronePos[0]+Math.cos(w2)*.012, dronePos[1]+Math.sin(w2)*.008]; } }
+
+    for(i=0;i<NODES.length;i++){
+      n=NODES[i]; p=this.P(n.x,n.y);
+      var a = phase>0 ? 1 : easeOut((u*1.25 - i*0.11)/0.3);
+      if(a<=0) continue;
+      var active = dronePos && phase!==2 && Math.hypot(dronePos[0]-n.x,dronePos[1]-n.y)<n.r;
+      ctx.save();
+      ctx.globalAlpha=a;
+      // coverage
+      ctx.beginPath(); ctx.arc(p[0],p[1],n.r*s*a,0,Math.PI*2);
+      ctx.fillStyle=C.net; ctx.globalAlpha=a*(active?.14:.06); ctx.fill();
+      ctx.globalAlpha=a*(active?.9:.45); ctx.strokeStyle=C.net; ctx.lineWidth=active?1.4:1; ctx.setLineDash(active?[]:[3,4]); ctx.stroke(); ctx.setLineDash([]);
+      // node ring sweep (phase 0) or steady
+      if(phase===0 && a<1){ ctx.globalAlpha=(1-a)*.6; ctx.beginPath(); ctx.arc(p[0],p[1],n.r*s*a*1.15,0,Math.PI*2); ctx.stroke(); }
+      // node
+      ctx.globalAlpha=a; ctx.fillStyle=C.bg; ctx.beginPath(); ctx.arc(p[0],p[1],5,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=C.net; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle=C.net; ctx.beginPath(); ctx.arc(p[0],p[1],active?2.6:1.8,0,Math.PI*2); ctx.fill();
+      if(active){ var pulse=(time*1.5)%1; ctx.globalAlpha=(1-pulse)*.7; ctx.beginPath(); ctx.arc(p[0],p[1],5+pulse*14,0,Math.PI*2); ctx.stroke(); }
+      if(!this.small){ ctx.globalAlpha=a*.9; ctx.fillStyle=active?C.fg2:C.fg3; ctx.font='400 8.5px '+MONO; if('letterSpacing' in ctx) ctx.letterSpacing='0.08em'; ctx.fillText(n.name.toUpperCase(), p[0]+9, p[1]-7); }
+      ctx.restore();
+      // bearing line
+      if(active){ var dp=this.P(dronePos[0],dronePos[1]); ctx.save(); ctx.strokeStyle=C.net; ctx.globalAlpha=.55; ctx.lineWidth=1; ctx.setLineDash([2,3]); ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(dp[0],dp[1]); ctx.stroke(); ctx.restore(); }
+    }
+
+    // dock
+    if(phase>=1){ p=this.P(DOCK.x,DOCK.y); ctx.save(); ctx.strokeStyle=C.net; ctx.fillStyle=C.bg; ctx.lineWidth=1.2; ctx.translate(p[0],p[1]); ctx.rotate(Math.PI/4); ctx.beginPath(); ctx.rect(-4.5,-4.5,9,9); ctx.fill(); ctx.stroke(); ctx.rotate(-Math.PI/4); if(!this.small){ ctx.fillStyle=C.fg3; ctx.font='400 9px '+MONO; ctx.fillText('POLICE DRONE DOCK', 9, -6); } ctx.restore(); }
+
+    // track (solid, detected part)
+    if(phase>=1 && droneS>S_DET){
+      ctx.save(); ctx.strokeStyle=C.hot; ctx.lineWidth=1.5; ctx.lineJoin='round';
+      ctx.beginPath(); var first=true;
+      for(var ss=S_DET; ss<=droneS; ss+=.004){ var q=at(ss); var qp=this.P(q[0],q[1]); if(first){ctx.moveTo(qp[0],qp[1]); first=false;} else ctx.lineTo(qp[0],qp[1]); }
+      var qq=this.P(dronePos[0],dronePos[1]); if(phase!==2) ctx.lineTo(qq[0],qq[1]);
+      ctx.stroke(); ctx.restore();
+      // first detection marker
+      var fd=at(S_DET), fp=this.P(fd[0],fd[1]);
+      ctx.save(); ctx.strokeStyle=C.hot; ctx.lineWidth=1; ctx.globalAlpha=.9; ctx.beginPath(); ctx.arc(fp[0],fp[1],4,0,Math.PI*2); ctx.stroke(); ctx.restore();
+      if(!this.small && (phase===1&&u>.25 || phase>1)){ ctx.save(); ctx.fillStyle=C.fg3; ctx.font='400 9px '+MONO; ctx.fillText('FIRST DETECTION 21:31:48', fp[0]+8, fp[1]+12); ctx.restore(); }
+    }
+
+    // trace-back
+    if(phase>=2){
+      var v = phase===2 ? easeOut(u/.6) : 1;
+      var fd2=at(S_DET), a0=this.P(fd2[0],fd2[1]), b0=this.P(LAUNCH.x,LAUNCH.y);
+      ctx.save(); ctx.strokeStyle=C.hot; ctx.lineWidth=1.4; ctx.setLineDash([4,4]); ctx.lineDashOffset=-time*20; ctx.globalAlpha=.9;
+      ctx.beginPath(); ctx.moveTo(a0[0],a0[1]); ctx.lineTo(a0[0]+(b0[0]-a0[0])*v, a0[1]+(b0[1]-a0[1])*v); ctx.stroke();
+      // replay sweep along recorded track (phase 2)
+      if(phase===2){ var rs=S_TARGET-(S_TARGET-S_DET)*easeOut(u/.55); var rp=at(Math.max(S_DET,rs)); var rpp=this.P(rp[0],rp[1]); ctx.setLineDash([]); ctx.fillStyle=C.fg; ctx.globalAlpha=.9; ctx.beginPath(); ctx.arc(rpp[0],rpp[1],3,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+      if(v>=.98){
+        var pr=(time*1.2)%1;
+        ctx.save(); ctx.translate(b0[0],b0[1]);
+        ctx.strokeStyle=C.hot; ctx.lineWidth=1.2; ctx.globalAlpha=.9;
+        ctx.beginPath(); ctx.ellipse(0,0,s*.038,s*.024,-.6,0,Math.PI*2); ctx.stroke();
+        ctx.globalAlpha=(1-pr)*.6; ctx.beginPath(); ctx.ellipse(0,0,s*.038*(1+pr*.5),s*.024*(1+pr*.5),-.6,0,Math.PI*2); ctx.stroke();
+        ctx.globalAlpha=1; ctx.beginPath(); ctx.moveTo(-9,0); ctx.lineTo(9,0); ctx.moveTo(0,-9); ctx.lineTo(0,9); ctx.stroke();
+        ctx.restore();
+        if(phase===2 || u<.5) this.label(b0[0]-12, b0[1]-s*.075, 'LAUNCH AREA', 'est. ±150 m · coastal road', C.hot, 'right');
+      }
+    }
+
+    // drone + HUD
+    if(dronePos){
+      var seen = droneS>=S_DET;
+      this.drone(dronePos[0],dronePos[1],C.hot, seen?1:.28, heading);
+      var dp2=this.P(dronePos[0],dronePos[1]);
+      if(seen && phase===1 && u>.2){ var spd=Math.round(38+Math.sin(time*2)*4); this.label(dp2[0]+12, dp2[1]-26, 'TRK-0417 · QUAD', spd+' km/h · 80 m AGL · no Remote ID', C.hot); }
+      if(phase===2 && !this.small){ this.label(dp2[0]+12, dp2[1]-26, 'TRK-0417 · LOITERING', 'over Industrial park · 21:34:10', C.hot); }
+    }
+
+    // chase drone
+    if(phase===3){
+      var cp, landed = u>=.985;
+      var ip=at(.60);
+      if(u<.12){ var lp=this.P(DOCK.x,DOCK.y); var r0=(u/.12); ctx.save(); ctx.strokeStyle=C.net; ctx.globalAlpha=1-r0; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(lp[0],lp[1],6+r0*24,0,Math.PI*2); ctx.stroke(); ctx.restore(); cp=[DOCK.x,DOCK.y]; }
+      else if(u<.4){ var f=ease((u-.12)/.28); cp=[DOCK.x+(ip[0]-DOCK.x)*f, DOCK.y+(ip[1]-DOCK.y)*f]; }
+      else { cp=at(Math.max(.60, droneS-.05)); }
+      // chase path trail
+      if(u>=.12){ ctx.save(); ctx.strokeStyle=C.net; ctx.lineWidth=1.2; ctx.globalAlpha=.7; ctx.setLineDash([1,4]); ctx.beginPath();
+        var d0=this.P(DOCK.x,DOCK.y); ctx.moveTo(d0[0],d0[1]);
+        if(u<.4){ var c1=this.P(cp[0],cp[1]); ctx.lineTo(c1[0],c1[1]); }
+        else { var i0=this.P(ip[0],ip[1]); ctx.lineTo(i0[0],i0[1]); for(var cs=.60; cs<=Math.max(.60,droneS-.05); cs+=.004){ var cq=at(cs), cqp=this.P(cq[0],cq[1]); ctx.lineTo(cqp[0],cqp[1]); } }
+        ctx.stroke(); ctx.restore(); }
+      this.police(cp[0],cp[1],1);
+      var cpp=this.P(cp[0],cp[1]);
+      if(u>.14 && u<.5) this.label(cpp[0]-12, cpp[1]+12, 'POLICE DRONE · CUED', 'dispatch 21:35:40 · intercept 1.9 km', C.net, 'right');
+      if(u>=.5 && !landed) this.label(cpp[0]-12, cpp[1]+12, 'FOLLOWING', 'camera locked · 120 m behind', C.net, 'right');
+      if(landed){
+        var lb=this.P(dronePos[0],dronePos[1]); var k=14;
+        ctx.save(); ctx.strokeStyle=C.net; ctx.lineWidth=1.5;
+        [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(c){ ctx.beginPath(); ctx.moveTo(lb[0]+c[0]*k, lb[1]+c[1]*k*.5); ctx.lineTo(lb[0]+c[0]*k, lb[1]+c[1]*k); ctx.lineTo(lb[0]+c[0]*k*.5, lb[1]+c[1]*k); ctx.stroke(); });
+        ctx.fillStyle=C.line2; ctx.strokeStyle=C.fg3; ctx.lineWidth=1; ctx.fillRect(lb[0]-8,lb[1]+5,16,8); ctx.strokeRect(lb[0]-8.5,lb[1]+4.5,17,9);
+        ctx.restore();
+        this.label(lb[0]-12, lb[1]-s*.075, 'LANDING FILMED 21:43:07', 'vehicle on coastal road · evidence pack sent', C.net, 'right');
+      }
+    }
+  };
+
+  /* ---------- Hero: looping ---------- */
+  var heroC=document.getElementById('heroCanvas');
+  var hero=new Scene(heroC,'loop');
+  var heroTag=document.getElementById('heroPhase');
+  hero.onPhase=function(p){ heroTag.textContent = PHASE_TAGS[p]; };
+
+  /* ---------- Elevation scene: the mechanism, side view ---------- */
+  var E_G=.46, E_R=.165, E_TOP=.03, E_DOCK=.33, E_VEH=.86, E_CLIFF=.91, E_KM=.1333, E_M=.002; // vertical scale: 1 m = .002
+  var E_MASTS=[{x:.14,name:'Substation'},{x:.27,name:'Logistics depot'},{x:.40,name:'Industrial park'},{x:.53,name:'Supplier plant'},{x:.64,name:'Coast station'}];
+  var EPATH=buildPath([[.86,.455],[.80,.38],[.74,.32],[.60,.30],[.44,.30],[.60,.282],[.74,.282],[.80,.37],[.86,.455]],60);
+  function eCov(p){ for(var i=0;i<E_MASTS.length;i++){ if(Math.hypot(p[0]-E_MASTS[i].x, p[1]-(E_G-E_TOP))<E_R) return true; } return false; }
+  var E_DET=0; (function(){ for(var s=0;s<=1;s+=.002){ if(eCov(atP(EPATH,s))){ E_DET=s; return; } } })();
+  var E_TARGET=.5;
+  function Elev(canvas){ Scene.call(this, canvas, 'phase'); }
+  Elev.prototype=Object.create(Scene.prototype);
+  Elev.prototype.resize=function(){
+    var r=this.c.getBoundingClientRect(); if(!r.width) return;
+    var d=Math.min(2,window.devicePixelRatio||1);
+    this.c.width=Math.round(r.width*d); this.c.height=Math.round(r.height*d);
+    this.W=r.width; this.H=r.height; this.ctx.setTransform(d,0,0,d,0,0);
+    var s=Math.max(this.W, this.H/0.5625); this.s=s; this.ox=(this.W-s)/2; this.oy=(this.H-s*0.5625)/2;
+    this.small=this.W<520; this.render(performance.now());
+  };
+  Elev.prototype.box=function(x,y,lines,color,align){
+    var ctx=this.ctx, pad=7, fs=this.small?9:10.5, lh=fs*1.45, w=0, i;
+    ctx.save();
+    for(i=0;i<lines.length;i++){ ctx.font=(i?'400 ':'500 ')+fs+'px '+MONO; w=Math.max(w, ctx.measureText(lines[i]).width); }
+    w+=pad*2+2; var h=pad*2+lh*lines.length-(lh-fs);
+    var lx=align==='right'?x-w:x, ly=y;
+    if(lx+w>this.W-6) lx=this.W-6-w; if(lx<6) lx=6; if(ly+h>this.H-6) ly=this.H-6-h; if(ly<6) ly=6;
+    ctx.fillStyle='rgba(10,14,19,.9)'; ctx.strokeStyle=color; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.rect(lx+.5,ly+.5,w,h); ctx.fill(); ctx.stroke(); ctx.fillRect(lx,ly,2,h);
+    ctx.textBaseline='top';
+    for(i=0;i<lines.length;i++){ ctx.fillStyle=i?C.fg2:color; ctx.font=(i?'400 ':'500 ')+fs+'px '+MONO; ctx.fillText(lines[i], lx+pad+2, ly+pad+lh*i); }
+    ctx.restore();
+  };
+  Elev.prototype.draw=function(phase,u,time){
+    var ctx=this.ctx, W=this.W, H=this.H, s=this.s, i, p, m;
+    ctx.clearRect(0,0,W,H);
+    var G=this.P(0,E_G)[1];
+    // altitude scale
+    ctx.save(); ctx.strokeStyle=C.line; ctx.lineWidth=1; ctx.fillStyle=C.fg3; ctx.font='400 8.5px '+MONO; ctx.textAlign='right';
+    for(i=0;i<=150;i+=50){ var yy=this.P(0,E_G-i*E_M)[1]; ctx.globalAlpha=.9; ctx.beginPath(); ctx.moveTo(this.P(.065,0)[0],Math.round(yy)+.5); ctx.lineTo(W,Math.round(yy)+.5); ctx.stroke(); if(!this.small){ ctx.fillText(i+' m', this.P(.058,0)[0], yy+3); } }
+    ctx.restore();
+    // ground and sea
+    var gx0=this.P(0,0)[0], cx=this.P(E_CLIFF,0)[0], sea=this.P(0,E_G+.02)[1];
+    ctx.save();
+    ctx.fillStyle=C.line; ctx.globalAlpha=.35; ctx.beginPath(); ctx.moveTo(gx0,G); ctx.lineTo(cx,G); ctx.lineTo(cx,H); ctx.lineTo(gx0,H); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=1; ctx.strokeStyle=C.fg3; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(gx0,Math.round(G)+.5); ctx.lineTo(cx,Math.round(G)+.5); ctx.lineTo(cx,sea); ctx.lineTo(W,sea); ctx.stroke();
+    ctx.beginPath(); ctx.rect(cx,sea,W-cx,H-sea); ctx.clip(); ctx.strokeStyle=C.net; ctx.globalAlpha=.14; ctx.lineWidth=1;
+    for(var hy=sea+4; hy<H; hy+=6){ ctx.beginPath(); ctx.moveTo(cx,hy); ctx.lineTo(W,hy); ctx.stroke(); }
+    ctx.restore();
+    // km ticks and scale bar
+    ctx.save(); ctx.strokeStyle=C.fg3; ctx.lineWidth=1; ctx.fillStyle=C.fg3; ctx.font='400 8.5px '+MONO;
+    for(i=0;i<=6;i++){ var tx=this.P(.06+i*E_KM,0)[0]; ctx.beginPath(); ctx.moveTo(Math.round(tx)+.5,G); ctx.lineTo(Math.round(tx)+.5,G+5); ctx.stroke(); }
+    if(!this.small){ var sx=this.P(.77,0)[0], ex=this.P(.77+E_KM,0)[0], sy=this.P(0,.07)[1]; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,sy); ctx.moveTo(sx,sy-3); ctx.lineTo(sx,sy+3); ctx.moveTo(ex,sy-3); ctx.lineTo(ex,sy+3); ctx.stroke(); ctx.fillText('1 km', sx+(ex-sx)/2-12, sy-5); if('letterSpacing' in ctx) ctx.letterSpacing='0.08em'; ctx.fillText('VERTICAL ×10', sx, sy+14); ctx.fillText('SEA', this.P(.94,0)[0], sea+14); ctx.fillText('COASTAL ROAD', this.P(E_VEH-.055,0)[0], G+16); }
+    ctx.restore();
+    // drone position
+    var droneS=null, dronePos=null, heading=0;
+    if(phase===1) droneS=u*E_TARGET; else if(phase===2) droneS=E_TARGET; else if(phase===3) droneS=E_TARGET+(1-E_TARGET)*ease(u);
+    if(droneS!==null){ dronePos=atP(EPATH,droneS); var ah=atP(EPATH,Math.min(1,droneS+.01)); heading=Math.atan2(ah[1]-dronePos[1],ah[0]-dronePos[0]); if(phase===2){ dronePos=[dronePos[0]+Math.cos(time*1.4)*.008, dronePos[1]+Math.sin(time*2.1)*.004]; } }
+    // masts and domes
+    for(i=0;i<E_MASTS.length;i++){
+      m=E_MASTS[i]; var a=phase>0?1:easeOut((u*1.3-i*.14)/.35); if(a<=0) continue;
+      var base=this.P(m.x,E_G), top=this.P(m.x,E_G-E_TOP*a);
+      var active=dronePos && phase!==2 && Math.hypot(dronePos[0]-m.x, dronePos[1]-(E_G-E_TOP))<E_R;
+      ctx.save(); ctx.globalAlpha=a;
+      ctx.beginPath(); ctx.arc(top[0],top[1],E_R*s*easeOut(a),Math.PI,0); ctx.lineTo(top[0]+E_R*s*easeOut(a), G); ctx.lineTo(top[0]-E_R*s*easeOut(a), G); ctx.closePath();
+      ctx.fillStyle=C.net; ctx.globalAlpha=a*(active?.12:.05); ctx.fill();
+      ctx.beginPath(); ctx.arc(top[0],top[1],E_R*s*easeOut(a),Math.PI,0); ctx.strokeStyle=C.net; ctx.lineWidth=active?1.4:1; ctx.globalAlpha=a*(active?.9:.4); ctx.setLineDash(active?[]:[3,4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.globalAlpha=a; ctx.strokeStyle=C.net; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(base[0],base[1]); ctx.lineTo(top[0],top[1]); ctx.stroke();
+      ctx.fillStyle=C.bg; ctx.beginPath(); ctx.arc(top[0],top[1],4,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=C.net; ctx.beginPath(); ctx.arc(top[0],top[1],active?2.4:1.6,0,Math.PI*2); ctx.fill();
+      if(active){ var pulse=(time*1.5)%1; ctx.globalAlpha=(1-pulse)*.7; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(top[0],top[1],4+pulse*14,0,Math.PI*2); ctx.stroke(); }
+      if(!this.small){ ctx.globalAlpha=a*.9; ctx.fillStyle=active?C.fg2:C.fg3; ctx.font='400 8.5px '+MONO; if('letterSpacing' in ctx) ctx.letterSpacing='0.08em'; ctx.textAlign='center'; ctx.fillText(m.name.toUpperCase(), base[0], G+(i%2?40:28)); }
+      ctx.restore();
+      if(active){ var dp=this.P(dronePos[0],dronePos[1]); ctx.save(); ctx.strokeStyle=C.net; ctx.globalAlpha=.55; ctx.lineWidth=1; ctx.setLineDash([2,3]); ctx.beginPath(); ctx.moveTo(top[0],top[1]); ctx.lineTo(dp[0],dp[1]); ctx.stroke(); ctx.restore(); }
+    }
+    // node callout (phase 0)
+    if(phase===0 && u>.55){
+      var cm=E_MASTS[2], ct=this.P(cm.x,E_G-E_TOP), k=easeOut((u-.55)/.3);
+      var bx=this.P(cm.x+.05, .10);
+      ctx.save(); ctx.strokeStyle=C.net; ctx.globalAlpha=k; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(ct[0],ct[1]); ctx.lineTo(ct[0]+(bx[0]-ct[0])*k, ct[1]+(bx[1]-ct[1])*k); ctx.stroke(); ctx.restore();
+      if(k>=.99) this.box(bx[0], bx[1]-10, ['NODE 03 · INDUSTRIAL PARK','mic array ×4 · camera · RF receiver','Remote ID · classification on device','mains or solar · mobile uplink'], C.net);
+    }
+    // dock and vehicle
+    var dk=this.P(E_DOCK,E_G), vh=this.P(E_VEH,E_G);
+    if(phase>=1){ ctx.save(); ctx.strokeStyle=C.net; ctx.fillStyle=C.bg; ctx.lineWidth=1.2; ctx.beginPath(); ctx.rect(dk[0]-5,dk[1]-7,10,7); ctx.fill(); ctx.stroke(); ctx.restore(); }
+    ctx.save(); ctx.fillStyle=C.line2; ctx.strokeStyle=C.fg3; ctx.lineWidth=1; ctx.fillRect(vh[0]-8,vh[1]-7,16,7); ctx.strokeRect(vh[0]-8.5,vh[1]-7.5,17,8); ctx.restore();
+    // track
+    if(phase>=1 && droneS>E_DET){
+      ctx.save(); ctx.strokeStyle=C.hot; ctx.lineWidth=1.5; ctx.lineJoin='round'; ctx.beginPath(); var first=true;
+      for(var ss=E_DET; ss<=droneS; ss+=.004){ var q=atP(EPATH,ss), qp=this.P(q[0],q[1]); if(first){ctx.moveTo(qp[0],qp[1]);first=false;} else ctx.lineTo(qp[0],qp[1]); }
+      if(phase!==2){ var qq=this.P(dronePos[0],dronePos[1]); ctx.lineTo(qq[0],qq[1]); }
+      ctx.stroke(); ctx.restore();
+      var fd=atP(EPATH,E_DET), fp=this.P(fd[0],fd[1]);
+      ctx.save(); ctx.strokeStyle=C.hot; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(fp[0],fp[1],4,0,Math.PI*2); ctx.stroke(); ctx.restore();
+      if(!this.small && (phase>1 || u>.3)){ ctx.save(); ctx.fillStyle=C.fg3; ctx.font='400 8.5px '+MONO; ctx.textAlign='center'; ctx.fillText('FIRST DETECTION · '+Math.round((E_G-fd[1])/E_M)+' m AGL', fp[0], fp[1]-12); ctx.restore(); }
+    }
+    // trace-back
+    if(phase>=2){
+      var v=phase===2?easeOut(u/.6):1, fd2=atP(EPATH,E_DET), a0=this.P(fd2[0],fd2[1]);
+      ctx.save(); ctx.strokeStyle=C.hot; ctx.lineWidth=1.4; ctx.setLineDash([4,4]); ctx.lineDashOffset=-time*20; ctx.globalAlpha=.9;
+      ctx.beginPath(); ctx.moveTo(a0[0],a0[1]); ctx.lineTo(a0[0]+(vh[0]-a0[0])*v, a0[1]+(vh[1]-a0[1])*v); ctx.stroke();
+      if(phase===2){ var rs=E_TARGET-(E_TARGET-E_DET)*easeOut(u/.55), rp=atP(EPATH,Math.max(E_DET,rs)), rpp=this.P(rp[0],rp[1]); ctx.setLineDash([]); ctx.fillStyle=C.fg; ctx.beginPath(); ctx.arc(rpp[0],rpp[1],3,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+      if(v>=.98){
+        var b1=this.P(E_VEH-.02,E_G)[0], b2=this.P(E_VEH+.02,E_G)[0], by=G+8, pr=(time*1.2)%1;
+        ctx.save(); ctx.strokeStyle=C.hot; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(b1,by-4); ctx.lineTo(b1,by+4); ctx.moveTo(b1,by); ctx.lineTo(b2,by); ctx.moveTo(b2,by-4); ctx.lineTo(b2,by+4); ctx.stroke();
+        ctx.globalAlpha=(1-pr)*.6; ctx.beginPath(); ctx.ellipse(vh[0],G,(b2-b1)/2*(1+pr*.6),6*(1+pr*.6),0,0,Math.PI*2); ctx.stroke(); ctx.restore();
+        if(phase===2 || u<.5) this.box(vh[0]-14, this.P(0,.13)[1], ['LAUNCH AREA','est. ±150 m · coastal road',((E_VEH-fd2[0])/E_KM).toFixed(1)+' km before first detection'], C.hot, 'right');
+      }
+    }
+    // drone and HUD
+    if(dronePos){
+      var seen=droneS>=E_DET; this.drone(dronePos[0],dronePos[1],C.hot,seen?1:.28,heading);
+      var dp2=this.P(dronePos[0],dronePos[1]);
+      if(seen && phase===1 && u>.25) this.box(dp2[0]-14, dp2[1]-56, ['TRK-0417 · QUAD', (38+Math.round(Math.sin(time*2)*4))+' km/h · 80 m AGL · no Remote ID'], C.hot, 'right');
+      if(phase===2 && !this.small) this.box(dp2[0]-14, dp2[1]-56, ['TRK-0417 · LOITERING','over Industrial park · 21:34:10'], C.hot, 'right');
+    }
+    // chase drone
+    if(phase===3){
+      var cp, landed=u>=.985, ip=atP(EPATH,.62), dkp=[E_DOCK,E_G-.012];
+      if(u<.12){ var r0=u/.12; ctx.save(); ctx.strokeStyle=C.net; ctx.globalAlpha=1-r0; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(dk[0],dk[1]-4,6+r0*24,0,Math.PI*2); ctx.stroke(); ctx.restore(); cp=dkp; }
+      else if(u<.4){ var f=ease((u-.12)/.28); cp=[dkp[0]+(ip[0]-dkp[0])*f, dkp[1]+(ip[1]-dkp[1])*f]; }
+      else cp=atP(EPATH,Math.max(.62,droneS-.05));
+      if(u>=.12){ ctx.save(); ctx.strokeStyle=C.net; ctx.lineWidth=1.2; ctx.globalAlpha=.7; ctx.setLineDash([1,4]); ctx.beginPath(); var d0=this.P(dkp[0],dkp[1]); ctx.moveTo(d0[0],d0[1]);
+        if(u<.4){ var c1=this.P(cp[0],cp[1]); ctx.lineTo(c1[0],c1[1]); } else { var i0=this.P(ip[0],ip[1]); ctx.lineTo(i0[0],i0[1]); for(var cs=.62; cs<=Math.max(.62,droneS-.05); cs+=.004){ var cq=atP(EPATH,cs), cqp=this.P(cq[0],cq[1]); ctx.lineTo(cqp[0],cqp[1]); } }
+        ctx.stroke(); ctx.restore(); }
+      this.police(cp[0],cp[1],1);
+      var cpp=this.P(cp[0],cp[1]);
+      if(u>.14 && u<.5) this.box(cpp[0]-14, cpp[1]-50, ['POLICE DRONE · CUED','dispatch 21:35:40 · intercept 1.3 km'], C.net, 'right');
+      if(u>=.5 && !landed) this.box(cpp[0]-14, cpp[1]-50, ['FOLLOWING','camera locked · 120 m behind'], C.net, 'right');
+      if(landed){
+        var k2=14; ctx.save(); ctx.strokeStyle=C.net; ctx.lineWidth=1.5;
+        [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(c){ ctx.beginPath(); ctx.moveTo(vh[0]+c[0]*k2, vh[1]-4+c[1]*k2*.5); ctx.lineTo(vh[0]+c[0]*k2, vh[1]-4+c[1]*k2); ctx.lineTo(vh[0]+c[0]*k2*.5, vh[1]-4+c[1]*k2); ctx.stroke(); });
+        ctx.restore();
+        this.box(vh[0]-14, this.P(0,.13)[1], ['LANDING FILMED 21:43:07','vehicle on coastal road · evidence pack sent'], C.net, 'right');
+      }
+    }
+  };
+
+  /* ---------- How it works: phase by scroll ---------- */
+  var howC=document.getElementById('howCanvas');
+  var how=new Elev(howC);
+  var howTag=document.getElementById('howPhase');
+  var steps=Array.prototype.slice.call(document.querySelectorAll('#steps .step'));
+  function setStep(idx){
+    steps.forEach(function(s,i){ s.classList.toggle('active', i===idx); });
+    how.setPhase(idx); howTag.textContent='Step '+(idx+1)+' of 4';
+  }
+  function pickStep(){
+    var mid=window.innerHeight*0.5, best=0, bestD=1e9;
+    steps.forEach(function(s,i){ var r=s.getBoundingClientRect(); var c=(r.top+r.bottom)/2; var d=Math.abs(c-mid); if(d<bestD){bestD=d;best=i;} });
+    if(best!==how.phase) setStep(best);
+  }
+  window.addEventListener('scroll', pickStep, {passive:true});
+  window.addEventListener('resize', pickStep);
+  pickStep();
+
+  /* ---------- Network growth ---------- */
+  var netC=document.getElementById('netCanvas'), nctx=netC.getContext('2d');
+  var roHosts=document.getElementById('roHosts'), roTrack=document.getElementById('roTrack'), roWarn=document.getElementById('roWarn'), netTag=document.getElementById('netTag');
+  var SITES=[]; (function(){ var seed=7; function rnd(){ seed=(seed*16807)%2147483647; return seed/2147483647; }
+    var tries=0; while(SITES.length<22 && tries<4000){ tries++; var x=.07+rnd()*.86, y=.07+rnd()*.44; var ok=true; for(var i=0;i<SITES.length;i++){ if(Math.hypot(SITES[i].x-x,SITES[i].y-y)<.115){ok=false;break;} } if(ok) SITES.push({x:x,y:y,r:.085+rnd()*.03}); } })();
+  var MAXS=SITES.length, GROW=MAXS-3;
+  var NW={W:0,H:0,s:1,ox:0,oy:0}, lastHosts=-1, started=false, netLast=8.5;
+  function netResize(){ var r=netC.getBoundingClientRect(); if(!r.width) return; var d=Math.min(2,window.devicePixelRatio||1); netC.width=Math.round(r.width*d); netC.height=Math.round(r.height*d); nctx.setTransform(d,0,0,d,0,0); NW.W=r.width; NW.H=r.height; NW.s=Math.max(r.width, r.height/0.5625); NW.ox=(r.width-NW.s)/2; NW.oy=(r.height-NW.s*0.5625)/2; lastHosts=-1; if(started) netDraw(netLast); }
+  netResize(); if(window.ResizeObserver) new ResizeObserver(netResize).observe(netC);
+  var NP=function(x,y){ return [NW.ox+x*NW.s, NW.oy+y*NW.s]; };
+  var TRACK=[[.02,.22],[.98,.42]]; // sample drone path across the cluster (left to right)
+  var KM_PER_UNIT=6; // scene width = 6 km
+  function netDraw(time){
+    netLast=time; var cycle=11, t=reduce?cycle*.75:(time%cycle), count;
+    if(t<8) count=3+Math.floor(easeOut(t/8)*GROW); else count=MAXS;
+    var W=NW.W,H=NW.H,s=NW.s;
+    nctx.clearRect(0,0,W,H);
+    nctx.save(); nctx.strokeStyle=C.line; nctx.lineWidth=1; nctx.globalAlpha=.7; var g=s/16;
+    for(var x=NW.ox%g;x<W;x+=g){nctx.beginPath();nctx.moveTo(Math.round(x)+.5,0);nctx.lineTo(Math.round(x)+.5,H);nctx.stroke();}
+    for(var y=NW.oy%g;y<H;y+=g){nctx.beginPath();nctx.moveTo(0,Math.round(y)+.5);nctx.lineTo(W,Math.round(y)+.5);nctx.stroke();}
+    nctx.restore();
+    // coverage union
+    nctx.save(); nctx.globalCompositeOperation='lighter';
+    for(var i=0;i<count;i++){ var n=SITES[i], p=NP(n.x,n.y), age=Math.min(1,(t-(i<3?0:(i-3)/GROW*8))/.6); if(age<=0)continue; nctx.beginPath(); nctx.arc(p[0],p[1],n.r*s*easeOut(age),0,Math.PI*2); nctx.fillStyle='rgba(127,179,227,'+(.07*easeOut(age))+')'; nctx.fill(); }
+    nctx.restore();
+    for(i=0;i<count;i++){ var n2=SITES[i], p2=NP(n2.x,n2.y), ag=Math.min(1,(t-(i<3?0:(i-3)/GROW*8))/.6); if(ag<=0)continue; nctx.save(); nctx.globalAlpha=easeOut(ag); nctx.strokeStyle=C.net; nctx.setLineDash([3,4]); nctx.lineWidth=1; nctx.globalAlpha=.4*easeOut(ag); nctx.beginPath(); nctx.arc(p2[0],p2[1],n2.r*s*easeOut(ag),0,Math.PI*2); nctx.stroke(); nctx.setLineDash([]); nctx.globalAlpha=easeOut(ag); nctx.fillStyle=C.bg; nctx.beginPath(); nctx.arc(p2[0],p2[1],4,0,Math.PI*2); nctx.fill(); nctx.stroke(); nctx.fillStyle=C.net; nctx.beginPath(); nctx.arc(p2[0],p2[1],1.6,0,Math.PI*2); nctx.fill(); nctx.restore(); }
+    // sample track: covered segments solid, uncovered faint dashed
+    var seen=0, N=160, firstSeen=-1;
+    nctx.save(); nctx.lineWidth=1.8;
+    for(i=0;i<N;i++){ var f0=i/N, f1=(i+1)/N; var ax=TRACK[0][0]+(TRACK[1][0]-TRACK[0][0])*f0, ay=TRACK[0][1]+(TRACK[1][1]-TRACK[0][1])*f0; var bx=TRACK[0][0]+(TRACK[1][0]-TRACK[0][0])*f1, by=TRACK[0][1]+(TRACK[1][1]-TRACK[0][1])*f1;
+      var cov=false; for(var j=0;j<count;j++){ var nn=SITES[j]; var agj=Math.min(1,(t-(j<3?0:(j-3)/GROW*8))/.6); if(agj<=0)continue; if(Math.hypot(ax-nn.x,ay-nn.y)<nn.r*easeOut(agj)){cov=true;break;} }
+      if(cov){ seen++; if(firstSeen<0) firstSeen=f0; }
+      var A=NP(ax,ay),B=NP(bx,by); nctx.beginPath(); nctx.moveTo(A[0],A[1]); nctx.lineTo(B[0],B[1]);
+      if(cov){ nctx.setLineDash([]); nctx.strokeStyle=C.hot; nctx.globalAlpha=1; } else { nctx.setLineDash([2,4]); nctx.strokeStyle=C.fg3; nctx.globalAlpha=.5; }
+      nctx.stroke(); }
+    nctx.restore();
+    // the protected site at the end of the track
+    var tp=NP(.86,.395); nctx.save(); nctx.strokeStyle=C.hot; nctx.lineWidth=1.2; nctx.strokeRect(tp[0]-7,tp[1]-7,14,14); nctx.fillStyle=C.fg3; nctx.font='400 9px '+MONO; if(NW.W>420){ nctx.fillText('PROTECTED SITE', tp[0]-30, tp[1]+22); var sp=NP(TRACK[0][0],TRACK[0][1]); nctx.fillText('SAMPLE TRACK', sp[0]+6, sp[1]-8); } nctx.restore();
+    // moving drone along sample track
+    var ds=(time*.09)%1; var dx=TRACK[0][0]+(TRACK[1][0]-TRACK[0][0])*ds, dy=TRACK[0][1]+(TRACK[1][1]-TRACK[0][1])*ds; var dcov=false; for(j=0;j<count;j++){ var n3=SITES[j]; if(Math.hypot(dx-n3.x,dy-n3.y)<n3.r){dcov=true;break;} }
+    var dp=NP(dx,dy); nctx.save(); nctx.fillStyle=C.hot; nctx.globalAlpha=dcov?1:.3; nctx.beginPath(); nctx.arc(dp[0],dp[1],3,0,Math.PI*2); nctx.fill(); nctx.restore();
+    // readouts
+    var trackLen=Math.hypot(TRACK[1][0]-TRACK[0][0],TRACK[1][1]-TRACK[0][1])*KM_PER_UNIT;
+    var seenKm=trackLen*seen/N;
+    var distToSite = firstSeen<0?0:(0.86-TRACK[0][0]-(TRACK[1][0]-TRACK[0][0])*firstSeen)/(TRACK[1][0]-TRACK[0][0])*trackLen; // km from first detection to the site
+    var warn=Math.max(0,Math.round(distToSite/ (40/3600) )); // 40 km/h
+    if(count!==lastHosts){ lastHosts=count; roHosts.textContent=count; roTrack.innerHTML=seenKm.toFixed(1)+' <em>km</em>'; roWarn.innerHTML=warn+' <em>s</em>'; netTag.textContent = t<8?'Hosts joining':'Cluster complete'; }
+  }
+
+  /* ---------- Animation loop with visibility gating ---------- */
+  var vis={hero:true,how:true,net:true};
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ vis[e.target.dataset.key]=e.isIntersecting; }); },{rootMargin:'80px'});
+    heroC.dataset.key='hero'; howC.dataset.key='how'; netC.dataset.key='net'; io.observe(heroC); io.observe(howC); io.observe(netC);
+  }
+  function frame(now){
+    if(vis.hero) hero.render(now);
+    if(vis.how) how.render(now);
+    if(vis.net) netDraw(now/1000);
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  function start(){ if(started) return; started=true; hero.resize(); how.resize(); netResize(); requestAnimationFrame(frame); if(reduce){ hero.render(performance.now()); how.render(performance.now()); netDraw(8.5); } }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(start); setTimeout(start, 1200);
+
+  /* ---------- Reveal ---------- */
+  var rv=document.querySelectorAll('.rv');
+  if('IntersectionObserver' in window && !reduce){
+    var ro=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }); },{rootMargin:'0px 0px -8% 0px',threshold:.08});
+    rv.forEach(function(el){ ro.observe(el); });
+    setTimeout(function(){ rv.forEach(function(el){ el.classList.add('in'); }); }, 2500);
+  } else { rv.forEach(function(el){ el.classList.add('in'); }); }
+
+  /* ---------- Clock + copy ---------- */
+  var clock=document.getElementById('clock');
+  function tick(){ var d=new Date(); clock.textContent=d.toISOString().slice(0,19).replace('T',' ')+' UTC'; }
+  tick(); setInterval(tick,1000);
+  var copyBtn=document.getElementById('copyBtn'), mail=document.getElementById('mail');
+  copyBtn.addEventListener('click', function(){
+    var txt=mail.textContent, done=function(){ copyBtn.textContent='Copied'; setTimeout(function(){ copyBtn.textContent='Copy address'; },1600); };
+    var fallback=function(){ var r=document.createRange(); r.selectNodeContents(mail); var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); copyBtn.textContent='Selected'; setTimeout(function(){ copyBtn.textContent='Copy address'; },1600); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, fallback); } else fallback();
+  });
+})();
+</script>

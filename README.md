@@ -11,15 +11,19 @@ npm run dev
 
 `npm run dev` prints two addresses and a QR code. Open the first on this machine and the second, or the QR code, on a phone connected to the same Wi-Fi.
 
-Other scripts: `npm run build` then `npm start` for a production build, `npm run lint`, `npm run typecheck`.
+Other scripts: `npm run build` writes the static site to `out/`, `npm run lint`, `npm run typecheck`.
+
+## Deploy
+
+The site is a static export. Every push to `main` builds it and publishes it to GitHub Pages through `.github/workflows/pages.yml`, under the `/spoor` path. The form needs a backend before it can accept registrations.
 
 ## Where things are
 
-- `app/` pages: home (`page.tsx`), `/host`, `/imprint`, `/privacy`, and `api/interest` (the register-interest endpoint).
+- `app/` pages: home (`page.tsx`), `/host`, `/imprint`, `/privacy`.
 - `components/` the nav, panels, forms and the three canvas views (`PlanView`, `HowItWorks`, `CoverageGrowth`).
 - `lib/scene/` the drawing code: `plan.ts` (map), `elevation.ts` (side view), `coverage.ts` (cluster growth), `common.ts` (shared machinery).
 - `lib/site.ts` the brand name, contact address, nav links and launch year. Change the name there.
-- `data/interest.jsonl` registrations from the form, one JSON object per line. Local only and ignored by git; swap the route for a database before deploying.
+- The register-interest form is display-only while in stealth: it sends nothing and points to the contact address.
 
 ## Before going public
 

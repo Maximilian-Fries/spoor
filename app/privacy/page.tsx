@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           <h2>Visiting the site</h2>
           <p>The site sets no cookies and loads no third-party analytics. Fonts are bundled with the site and served from the same server, so no font provider sees your visit. The web server keeps standard access logs (IP address, time, requested page) for <span className="ph">[retention period]</span> to run and secure the service, on the basis of our legitimate interest (Art. 6 (1) f GDPR).</p>
           <h2>Registering interest</h2>
-          <p>If you register interest, we store your email address, the role you chose and, if given, your organisation, so that we can contact you when we come out of stealth. The basis is your consent (Art. 6 (1) a GDPR), which you can withdraw at any time by writing to {CONTACT_EMAIL}. We delete the entry on request and at the latest <span className="ph">[period]</span> after launch.</p>
+          <p>While we are in stealth, the interest form on this site does not send or store anything. If you write to {CONTACT_EMAIL}, we keep your message to reply to it and delete it on request.</p>
           <h2>Your rights</h2>
           <p>You can ask what we hold about you, have it corrected or deleted, restrict its use, receive it in a portable form, and complain to a supervisory authority. The authority responsible for us is <span className="ph">[state data protection authority]</span>.</p>
         </div>
